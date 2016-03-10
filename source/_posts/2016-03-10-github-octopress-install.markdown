@@ -66,4 +66,20 @@ http://wen00072-blog.logdown.com/posts/258497-octopress-installed-and-deployed-o
 
 http://octopress.org/docs/deploying/github/
 
+# 其它問題
+
+```
+zsr:1: no matches found: [rejected]
+r: failed to push some refs to 'git@github.com:jimmy0328/jimmy0328.github.io.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Integrate the remote changes (e.g.
+hint: 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+先切到_deploy的目錄
+
+```
+git push origin master -f
+```
+http://blog.mohitkanwal.com/blog/2014/03/26/blogging-with-octopress-from-2-computers/
 
