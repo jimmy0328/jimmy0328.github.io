@@ -1,14 +1,121 @@
 ---
 layout: post
-title: "reactjs-1"
+title: "認識 Reactjs"
 date: 2016-03-10 18:29:05 +0800
 comments: true
 categories:
 ---
 
-建構中
-* 何謂 reactjs
-* reactjs Lifecycle
-* 第一支 reactjs
+## 何謂 reactjs
 
+[![Alt text](https://facebook.github.io/react/img/logo_og.png =200x)](https://facebook.github.io/react/)
+
+React 是Facebook 推出來的 JavaScript Library, 使用Virtual DOM 的方式處理，在效能部份也是比其它Library還要來的好的。
+官方連結: https://facebook.github.io/react/
+
+
+## React 的幾個概念
+*  Component
+*  JSX
+*  Virtual DOM
+*  Data Flow
+
+
+## reactjs Lifecycle
+https://facebook.github.io/react/docs/component-specs.html
+
+
+## Hello ReactJS
+以下範例會使用到
+
+* React.createClass
+* render
+
+```
+ <!DOCTYPE html>
+ <html>
+
+ <head>
+     <meta charset="utf-8" />
+     <title>Hello ReactJS</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+ </head>
+
+ <body>
+     <div id="example"></div>
+     <script type="text/babel">
+       var Hello = React.createClass({
+         render: function() {
+           return (
+                <div >
+                  Hello, ReactJS !
+               </div>
+               );
+           } });
+           ReactDOM.render(<Hello />, document.getElementById('example') );
+     </script>
+ </body>
+
+ </html>
+
+```
+這是一個很簡單的的react範例
+
+首先，必須載入 react,react-dom 及 browser
+```
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+
+```
+
+指定一個 div id為example, react component 會將render 出來的DOM放在這個區塊裡
+
+```
+<div id="example"></div>
+
+```
+
+這邊是一個 react component , 簡單的說明一下，使用 React.createClass 來建立 react component,
+
+在此component 的呈現，必須在 render 的方法內來回傳,這邊回傳的是 <div> Hello, ReactJS ! </div>
+
+```
+ var Hello  = React.createClass({
+   render: function() {
+     return (
+          <div >
+            Hello, ReactJS !
+         </div>
+      );
+   } });
+```
+
+最後上面的 react compoent 指命為 Hello, 在Hello Component的內容會被 render 到 example 的 div 內
+```
+ReactDOM.render(<CommentBox />, document.getElementById('example') );
+```
+
+注意，在script 的type 必須宣告為 text/babel
+
+```
+<script type="text/babel">
+// code
+
+</script>
+
+大功告成
+
+
+```
+
+
+## Demo 練習
+
+入門練習可以參考這以下
+
+*  https://github.com/ruanyf/react-demos
+*  http://blog.kdchang.cc/2015/10/reactjs-notes-intro.html
 
