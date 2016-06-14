@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Rails | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-06-14T23:09:20+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Acts_as_taggable_on Gem 介紹]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/14/use-acts-as-taggable-on-gem/"/>
+    <updated>2016-06-14T22:08:51+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/14/use-acts-as-taggable-on-gem</id>
+    <content type="html"><![CDATA[<p>Rails中使用tag方便整合的gem</p>
+
+<p><a href="https://github.com/mbleigh/acts-as-taggable-on">GitHub 官網</a></p>
+
+<h2>安裝步驟</h2>
+
+<p>Step1: Gemfile中加上</p>
+
+<pre><code>gem 'acts-as-taggable-on'
+</code></pre>
+
+<p>回command line 執行 bundle install</p>
+
+<p>Step2: 執行gem 的install</p>
+
+<pre><code>rake acts_as_taggable_on_engine:install:migrations
+</code></pre>
+
+<p>Step3: migrate</p>
+
+<pre><code>rake db:migrate
+</code></pre>
+
+<p>P.S 如果你使用的資料庫是MySQL 可以另外參加 <a href="https://github.com/mbleigh/acts-as-taggable-on#for-mysql-users">https://github.com/mbleigh/acts-as-taggable-on#for-mysql-users</a></p>
+
+<h2>如何使用</h2>
+
+<p>在Model 中的宣告方式有二種</p>
+
+<pre><code>class User &lt; ActiveRecord::Base
+  acts_as_taggable
+  acts_as_taggable_on :skill, :interest
+end
+</code></pre>
+
+<p>所以在Controller 中的使用方式, 有依據以上二種設定方式有不同的參數值，分別如下</p>
+
+<p>如果使用<code>acts_as_taggable</code> 後面不接任何參數，那default使用 tags_list
+<code>
+class UsersController &lt; ApplicationController
+  def user_params
+    params.require(:user).permit(:name, :tag_list)
+  end
+end
+</code></p>
+
+<p>如果使用 <code>acts_as_taggable_on :skills, :interests</code>, 那就有區分 skills_list 與 interests_list</p>
+
+<pre><code>class UsersController &lt; ApplicationController
+  def user_params
+    params.require(:user).permit(:name, :skill_list, interest_list)
+  end
+end
+</code></pre>
+
+<h2>大功告成</h2>
+
+<p>以上是最簡單的設定方式，前端只要送對應的 tag_list 或是 skill_list 過來即可</p>
+
+<pre><code>&lt;%= form_for :user , method: :post, url: users_path do |f| %&gt;
+略
+&lt;%= f.text_field :skill_list%&gt;
+&lt;%= f.text_field :interest_list%&gt;
+略
+</code></pre>
+
+<p>P.S 輸入的值預設是用逗號區隔開來，例如 interest_list 的值為<code>movie, game, swim</code></p>
+
+<h2>提供了找出最多與最少使用的tag</h2>
+
+<pre><code>ActsAsTaggableOn::Tag.most_used(10)
+ActsAsTaggableOn::Tag.least_used(10)
+</code></pre>
+
+<p>預設不給值是抓前20筆</p>
+
+<h2>其它用法介紹</h2>
+
+<p>使用 add 及 remove 來新增及刪除tag</p>
+
+<pre><code>@user.tag_list.add("awesome")   # add a single tag. alias for &lt;&lt;
+@user.tag_list.remove("awesome") # remove a single tag
+</code></pre>
+
+<pre><code>@user.tag_list.add("awesome", "slick")
+@user.tag_list.remove("awesome", "slick")
+</code></pre>
+
+<p>也可以很暴力的直接給他值</p>
+
+<pre><code>@user.tag_list = "awesome, slick, hefty"
+@user.save
+@user.reload
+@user.tags
+</code></pre>
+
+<h2>心得</h2>
+
+<p>此gem 提供很多不錯的helper，是很簡單就可以整合到專案上的GEM
+如果有注意看migration的就會發現它全部都是在控制 tag 與 tagging 二個 table
+最後如果想要更了解這個gem的使用可以參考 <a href="https://github.com/mbleigh/acts-as-taggable-on">GitHub 官網</a>
+在RailsCase 也有另一個教學可以參考<a href="http://railscasts.com/episodes/382-tagging">RailsCasts</a></p>
+]]></content>
+  </entry>
+  
+</feed>
