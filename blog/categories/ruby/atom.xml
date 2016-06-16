@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-06-16T10:34:43+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby 裡的class Method 與 Instance Method 使用方式]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/16/class-method-and-instance-method/"/>
+    <updated>2016-06-16T10:14:25+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/16/class-method-and-instance-method</id>
+    <content type="html"><![CDATA[<h2>Instance Method</h2>
+
+<p>簡單的說就是要先建立一個實體才能使用裡面的方法</p>
+
+<pre><code>class User
+
+  def initialize(name)
+    @name = name
+  end
+
+  # Instance method
+  def say_hello
+    "Hello, #{@name}"
+  end
+
+end
+</code></pre>
+
+<h4>使用方式</h4>
+
+<pre><code>user = User.new("Ruby")
+user.say_hello # =&gt; Hello, ruby
+</code></pre>
+
+<h4>說明</h4>
+
+<p>必須建立實體之後才能調用物件內的方式
+所以我們是不能直接用 User.say_hello</p>
+
+<h2>Class Method</h2>
+
+<pre><code>class Group
+
+  def self.name
+    "Kaohsiung Rails Meetup"
+  end
+
+  class &lt;&lt; self
+    def find(user_id)
+      "find group user with the id of #{user_id}"
+    end
+  end
+end
+</code></pre>
+
+<h4>使用方式</h4>
+
+<pre><code>puts Group.name # =&gt; Kaohsiung Rails Meetup
+puts Group.find(1) # =&gt; find group user with the is of 1
+</code></pre>
+
+<h4>說明</h4>
+
+<p>我最常使用的會有這二種宣告方式</p>
+
+<h2>Rails 中的 Class Method</h2>
+
+<p>在 Rails 中使用 ActiveRecord modul 時，其實裡面有許多class method 的方式
+最常見的就是 where, find, first&hellip;等</p>
+
+<pre><code> class Group &lt; ActiveRecord::Base
+
+   scope :active -&gt; { where state: 'active'}
+   scope :inactive -&gt; {where state: 'inactive'}
+
+   def permalink
+     xxxxxxxx
+   end
+
+ end
+</code></pre>
+
+<p>除了ruby 上面的二種宣告class method 的方式，在Rails中還可以使用scope 的方式來達到效果
+如果你有在寫Rails的話，scope 的使用方式就應該很熟了</p>
+
+<pre><code> 1. Group.active
+ 2. Group.find
+ 3. Group.first
+</code></pre>
+
+<p>打完收工</p>
+]]></content>
+  </entry>
+  
+</feed>

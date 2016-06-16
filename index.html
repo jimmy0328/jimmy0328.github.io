@@ -9,9 +9,19 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="Rails中使用tag方便整合的gem GitHub 官網 安裝步驟 Step1: Gemfile中加上 1
-gem 'acts-as-taggable-on' 回command line 執行 bundle install Step2: 執行gem 的install 1
-rake &hellip;">
+  <meta name="description" content="Instance Method 簡單的說就是要先建立一個實體才能使用裡面的方法 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+class User def initialize(name) @name = name end # Instance method def say_hello " &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +77,161 @@ rake &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/16/class-method-and-instance-method/">Ruby 裡的class Method 與 Instance Method 使用方式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-16T10:14:25+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:14 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Instance Method</h2>
+
+<p>簡單的說就是要先建立一個實體才能使用裡面的方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class User
+</span><span class='line'>
+</span><span class='line'>  def initialize(name)
+</span><span class='line'>    @name = name
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  # Instance method
+</span><span class='line'>  def say_hello
+</span><span class='line'>    "Hello, #{@name}"
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>使用方式</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user = User.new("Ruby")
+</span><span class='line'>user.say_hello # =&gt; Hello, ruby
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>說明</h4>
+
+<p>必須建立實體之後才能調用物件內的方式
+所以我們是不能直接用 User.say_hello</p>
+
+<h2>Class Method</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Group
+</span><span class='line'>
+</span><span class='line'>  def self.name
+</span><span class='line'>    "Kaohsiung Rails Meetup"
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  class &lt;&lt; self
+</span><span class='line'>    def find(user_id)
+</span><span class='line'>      "find group user with the id of #{user_id}"
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>使用方式</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>puts Group.name # =&gt; Kaohsiung Rails Meetup
+</span><span class='line'>puts Group.find(1) # =&gt; find group user with the is of 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>說明</h4>
+
+<p>我最常使用的會有這二種宣告方式</p>
+
+<h2>Rails 中的 Class Method</h2>
+
+<p>在 Rails 中使用 ActiveRecord modul 時，其實裡面有許多class method 的方式
+最常見的就是 where, find, first&hellip;等</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> class Group &lt; ActiveRecord::Base
+</span><span class='line'>
+</span><span class='line'>   scope :active -&gt; { where state: 'active'}
+</span><span class='line'>   scope :inactive -&gt; {where state: 'inactive'}
+</span><span class='line'>
+</span><span class='line'>   def permalink
+</span><span class='line'>     xxxxxxxx
+</span><span class='line'>   end
+</span><span class='line'>
+</span><span class='line'> end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>除了ruby 上面的二種宣告class method 的方式，在Rails中還可以使用scope 的方式來達到效果
+如果你有在寫Rails的話，scope 的使用方式就應該很熟了</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> 1. Group.active
+</span><span class='line'> 2. Group.find
+</span><span class='line'> 3. Group.first</span></code></pre></td></tr></table></div></figure>
+
+
+<p>打完收工</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -563,6 +728,10 @@ rake &hellip;">
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/16/class-method-and-instance-method/">Ruby 裡的class Method 與 Instance Method 使用方式</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/06/14/use-acts-as-taggable-on-gem/">Acts_as_taggable_on Gem 介紹</a>
