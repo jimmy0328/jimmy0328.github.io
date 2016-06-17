@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Test | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/test/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-06-17T11:37:28+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Rspec 介紹]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/17/ruby-rspec/"/>
+    <updated>2016-06-17T10:34:23+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/17/ruby-rspec</id>
+    <content type="html"><![CDATA[<h2>什麼是Rspec</h2>
+
+<p><a href="http://rspec.info">Rspec 官網</a></p>
+
+<p>Behaviour Driven
+Development for Ruby.
+Making TDD Productive and Fun.</p>
+
+<p>簡開單的說它就是一種測試工具，在系統開發過中，很多人會使用TDD的開方方法來做開發，所以撰寫測試就是一個其中一個很重要的部份了。</p>
+
+<p>Rspec 是 Ruby 專用的測試，所以你可以在許多在Rails專案中導入使用來測試 Controller, Model, Request ..等
+這邊要介紹的是單純的Ruby程式怎麼使用 Rspec 來測試</p>
+
+<h2>安裝Rspec</h2>
+
+<p>在你的開發目錄中，先安裝 Rspec</p>
+
+<pre><code>gem install Rspec
+</code></pre>
+
+<p>接著在目錄下初始化一下 Rspec</p>
+
+<p>相關的Rspec套件也會一併安裝
+<img src="/images/rspec/gem_install_rspec.png" alt="Alt text" /></p>
+
+<pre><code>rspec --init
+</code></pre>
+
+<p><img src="/images/rspec/rspec_init.png" alt="Alt text" /></p>
+
+<p>此時會自動產生一個spec 的目錄，在目前裡會有一支 spec_helper.rb</p>
+
+<h2>How to use</h2>
+
+<p>在以下的範例僅是我為了簡單解說，所以不是一個很正規的架構方法</p>
+
+<ul>
+<li>首先建立一個 ruby class, 我這邊是一支 tag.rb</li>
+<li>建立一個 models 的目錄，之後有撰寫class的測試腳本都可以放在這邊</li>
+<li>在 models 裡建立一支 tag_spec.rb</li>
+</ul>
+
+
+<p>大致上需要先手動建立一下這些目錄及程式</p>
+
+<p><img src="/images/rspec/folder_tree.png" alt="Alt text" /></p>
+
+<h4>ruby class</h4>
+
+<p>這是一個很簡單的ruby class ,好像沒什麼功能，所以才說單純是為了練習
+在class裡有一個方法 add 可以用來加1</p>
+
+<p><code>tag.rb</code>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Tag
+</span><span class='line'>  attr_reader :count&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  def initialize
+</span><span class='line'>    @count = 0
+</span><span class='line'>  end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  def add
+</span><span class='line'>   @count += 1
+</span><span class='line'>  end
+</span><span class='line'>end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>#### spec
+</span><span class='line'>
+</span><span class='line'>這邊不解說Rspec的寫法，下一篇會詳細說明
+</span><span class='line'>
+</span><span class='line'>`` tag_spec.rb ``
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;require &lsquo;spec_helper&rsquo;
+</span><span class='line'>require &lsquo;tag&rsquo;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;describe Tag do
+</span><span class='line'>  it &lsquo;tag count for each roll&rsquo; do
+</span><span class='line'>    tag = Tag.new
+</span><span class='line'>    10.times { tag.add }
+</span><span class='line'>    expect(tag.count).to eq(10)
+</span><span class='line'>  end
+</span><span class='line'>end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>
+</span><span class='line'>## 測試
+</span><span class='line'>
+</span><span class='line'>可以直接測單一程式或是整個目錄
+</span><span class='line'>
+</span><span class='line'>單一程式
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;rspec /spec/models/tag_spec.rb</span></code></pre></td></tr></table></div></figure>
+<img src="/images/rspec/test_one_class.png" alt="Alt text" /></p>
+
+<p>測試整個目錄
+<code>
+rspec /spec/models
+</code>
+<img src="/images/rspec/test_models.png" alt="Alt text" /></p>
+
+<h2>心得</h2>
+
+<p>有做測試會比較有品質保障
+接下來還會有幾篇陸續介紹
+今天打完收工</p>
+]]></content>
+  </entry>
+  
+</feed>

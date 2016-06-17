@@ -5,23 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Ruby 裡的class Method 與 Instance Method 使用方式 - 熊爸天下</title>
+  <title>Rspec 介紹 - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="Instance Method 簡單的說就是要先建立一個實體才能使用裡面的方法 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-class User def initialize(name) @name = name end # Instance method def say_hello " &hellip;">
+  <meta name="description" content="什麼是Rspec Rspec 官網 Behaviour Driven
+Development for Ruby.
+Making TDD Productive and Fun. 簡開單的說它就是一種測試工具，在系統開發過中，很多人會使用TDD的開方方法來做開發， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -30,7 +20,7 @@ class User def initialize(name) @name = name end # Instance method def say_hello
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/16/class-method-and-instance-method/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/17/ruby-rspec/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -80,7 +70,7 @@ class User def initialize(name) @name = name end # Instance method def say_hello
   
   <header>
     
-      <h1 class="entry-title">Ruby 裡的class Method 與 Instance Method 使用方式</h1>
+      <h1 class="entry-title">Rspec 介紹</h1>
     
     
       <p class="meta">
@@ -89,16 +79,68 @@ class User def initialize(name) @name = name end # Instance method def say_hello
 
 
 
-<time class='entry-date' datetime='2016-06-16T10:14:25+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:14 am</span></time>
+<time class='entry-date' datetime='2016-06-17T10:34:23+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:34 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>Instance Method</h2>
+<div class="entry-content"><h2>什麼是Rspec</h2>
 
-<p>簡單的說就是要先建立一個實體才能使用裡面的方法</p>
+<p><a href="http://rspec.info">Rspec 官網</a></p>
+
+<p>Behaviour Driven
+Development for Ruby.
+Making TDD Productive and Fun.</p>
+
+<p>簡開單的說它就是一種測試工具，在系統開發過中，很多人會使用TDD的開方方法來做開發，所以撰寫測試就是一個其中一個很重要的部份了。</p>
+
+<p>Rspec 是 Ruby 專用的測試，所以你可以在許多在Rails專案中導入使用來測試 Controller, Model, Request ..等
+這邊要介紹的是單純的Ruby程式怎麼使用 Rspec 來測試</p>
+
+<h2>安裝Rspec</h2>
+
+<p>在你的開發目錄中，先安裝 Rspec</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem install Rspec</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接著在目錄下初始化一下 Rspec</p>
+
+<p>相關的Rspec套件也會一併安裝
+<img src="/images/rspec/gem_install_rspec.png" alt="Alt text" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rspec --init</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/rspec/rspec_init.png" alt="Alt text" /></p>
+
+<p>此時會自動產生一個spec 的目錄，在目前裡會有一支 spec_helper.rb</p>
+
+<h2>How to use</h2>
+
+<p>在以下的範例僅是我為了簡單解說，所以不是一個很正規的架構方法</p>
+
+<ul>
+<li>首先建立一個 ruby class, 我這邊是一支 tag.rb</li>
+<li>建立一個 models 的目錄，之後有撰寫class的測試腳本都可以放在這邊</li>
+<li>在 models 裡建立一支 tag_spec.rb</li>
+</ul>
+
+
+<p>大致上需要先手動建立一下這些目錄及程式</p>
+
+<p><img src="/images/rspec/folder_tree.png" alt="Alt text" /></p>
+
+<h4>ruby class</h4>
+
+<p>這是一個很簡單的ruby class ,好像沒什麼功能，所以才說單純是為了練習
+在class裡有一個方法 add 可以用來加1</p>
+
+<p><code>tag.rb</code></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -111,37 +153,25 @@ class User def initialize(name) @name = name end # Instance method def say_hello
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class User
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Tag
+</span><span class='line'>  attr_reader :count
 </span><span class='line'>
-</span><span class='line'>  def initialize(name)
-</span><span class='line'>    @name = name
+</span><span class='line'>  def initialize
+</span><span class='line'>    @count = 0
 </span><span class='line'>  end
 </span><span class='line'>
-</span><span class='line'>  # Instance method
-</span><span class='line'>  def say_hello
-</span><span class='line'>    "Hello, #{@name}"
+</span><span class='line'>  def add
+</span><span class='line'>   @count += 1
 </span><span class='line'>  end
-</span><span class='line'>
 </span><span class='line'>end
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>使用方式</h4>
+<h4>spec</h4>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user = User.new("Ruby")
-</span><span class='line'>user.say_hello # =&gt; Hello, ruby
-</span></code></pre></td></tr></table></div></figure>
+<p>這邊不解說Rspec的寫法，下一篇會詳細說明</p>
 
-
-<h4>說明</h4>
-
-<p>必須建立實體之後才能調用物件內的方式
-所以我們是不能直接用 User.say_hello</p>
-
-<h2>Class Method</h2>
+<p><code>tag_spec.rb</code></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -153,76 +183,44 @@ class User def initialize(name) @name = name end # Instance method def say_hello
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Group
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'spec_helper'
+</span><span class='line'>require 'tag'
 </span><span class='line'>
-</span><span class='line'>  def self.name
-</span><span class='line'>    "Kaohsiung Rails Meetup"
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  class &lt;&lt; self
-</span><span class='line'>    def find(user_id)
-</span><span class='line'>      "find group user with the id of #{user_id}"
-</span><span class='line'>    end
+</span><span class='line'>describe Tag do
+</span><span class='line'>  it 'tag count for each roll' do
+</span><span class='line'>    tag = Tag.new
+</span><span class='line'>    10.times { tag.add }
+</span><span class='line'>    expect(tag.count).to eq(10)
 </span><span class='line'>  end
 </span><span class='line'>end
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>使用方式</h4>
+<h2>測試</h2>
+
+<p>可以直接測單一程式或是整個目錄</p>
+
+<p>單一程式</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>puts Group.name # =&gt; Kaohsiung Rails Meetup
-</span><span class='line'>puts Group.find(1) # =&gt; find group user with the is of 1
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rspec /spec/models/tag_spec.rb</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>說明</h4>
+<p><img src="/images/rspec/test_one_class.png" alt="Alt text" /></p>
 
-<p>我最常使用的會有這二種宣告方式</p>
-
-<h2>Rails 中的 Class Method</h2>
-
-<p>在 Rails 中使用 ActiveRecord modul 時，其實裡面有許多class method 的方式
-最常見的就是 where, find, first&hellip;等</p>
+<p>測試整個目錄</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> class Group &lt; ActiveRecord::Base
-</span><span class='line'>
-</span><span class='line'>   scope :active -&gt; { where state: 'active'}
-</span><span class='line'>   scope :inactive -&gt; {where state: 'inactive'}
-</span><span class='line'>
-</span><span class='line'>   def permalink
-</span><span class='line'>     xxxxxxxx
-</span><span class='line'>   end
-</span><span class='line'>
-</span><span class='line'> end
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rspec /spec/models</span></code></pre></td></tr></table></div></figure>
 
 
-<p>除了ruby 上面的二種宣告class method 的方式，在Rails中還可以使用scope 的方式來達到效果
-如果你有在寫Rails的話，scope 的使用方式就應該很熟了</p>
+<p><img src="/images/rspec/test_models.png" alt="Alt text" /></p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> 1. Group.active
-</span><span class='line'> 2. Group.find
-</span><span class='line'> 3. Group.first</span></code></pre></td></tr></table></div></figure>
+<h2>心得</h2>
 
-
-<p>打完收工</p>
+<p>有做測試會比較有品質保障
+接下來還會有幾篇陸續介紹
+今天打完收工</p>
 </div>
 
 
@@ -238,12 +236,12 @@ class User def initialize(name) @name = name end # Instance method def say_hello
 
 
 
-<time class='entry-date' datetime='2016-06-16T10:14:25+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:14 am</span></time>
+<time class='entry-date' datetime='2016-06-17T10:34:23+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:34 am</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+    <a class='category' href='/blog/categories/test/'>test</a>
   
 </span>
 
@@ -252,7 +250,7 @@ class User def initialize(name) @name = name end # Instance method def say_hello
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/16/class-method-and-instance-method/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/16/class-method-and-instance-method/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/17/ruby-rspec/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/17/ruby-rspec/" >Tweet</a>
   
   
   
@@ -261,10 +259,8 @@ class User def initialize(name) @name = name end # Instance method def say_hello
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/06/14/use-acts-as-taggable-on-gem/" title="Previous Post: acts_as_taggable_on gem 介紹">&laquo; acts_as_taggable_on gem 介紹</a>
+        <a class="basic-alignment left" href="/blog/2016/06/16/class-method-and-instance-method/" title="Previous Post:  Ruby 裡的class method 與 instance method 使用方式">&laquo;  Ruby 裡的class method 與 instance method 使用方式</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/06/17/ruby-rspec/" title="Next Post: Rspec 介紹">Rspec 介紹 &raquo;</a>
       
     </p>
   </footer>

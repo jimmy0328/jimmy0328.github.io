@@ -9,19 +9,9 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="Instance Method 簡單的說就是要先建立一個實體才能使用裡面的方法 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-class User def initialize(name) @name = name end # Instance method def say_hello " &hellip;">
+  <meta name="description" content="什麼是Rspec Rspec 官網 Behaviour Driven
+Development for Ruby.
+Making TDD Productive and Fun. 簡開單的說它就是一種測試工具，在系統開發過中，很多人會使用TDD的開方方法來做開發， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +67,169 @@ class User def initialize(name) @name = name end # Instance method def say_hello
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/17/ruby-rspec/">Rspec 介紹</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-17T10:34:23+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:34 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>什麼是Rspec</h2>
+
+<p><a href="http://rspec.info">Rspec 官網</a></p>
+
+<p>Behaviour Driven
+Development for Ruby.
+Making TDD Productive and Fun.</p>
+
+<p>簡開單的說它就是一種測試工具，在系統開發過中，很多人會使用TDD的開方方法來做開發，所以撰寫測試就是一個其中一個很重要的部份了。</p>
+
+<p>Rspec 是 Ruby 專用的測試，所以你可以在許多在Rails專案中導入使用來測試 Controller, Model, Request ..等
+這邊要介紹的是單純的Ruby程式怎麼使用 Rspec 來測試</p>
+
+<h2>安裝Rspec</h2>
+
+<p>在你的開發目錄中，先安裝 Rspec</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem install Rspec</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接著在目錄下初始化一下 Rspec</p>
+
+<p>相關的Rspec套件也會一併安裝
+<img src="/images/rspec/gem_install_rspec.png" alt="Alt text" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rspec --init</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/rspec/rspec_init.png" alt="Alt text" /></p>
+
+<p>此時會自動產生一個spec 的目錄，在目前裡會有一支 spec_helper.rb</p>
+
+<h2>How to use</h2>
+
+<p>在以下的範例僅是我為了簡單解說，所以不是一個很正規的架構方法</p>
+
+<ul>
+<li>首先建立一個 ruby class, 我這邊是一支 tag.rb</li>
+<li>建立一個 models 的目錄，之後有撰寫class的測試腳本都可以放在這邊</li>
+<li>在 models 裡建立一支 tag_spec.rb</li>
+</ul>
+
+
+<p>大致上需要先手動建立一下這些目錄及程式</p>
+
+<p><img src="/images/rspec/folder_tree.png" alt="Alt text" /></p>
+
+<h4>ruby class</h4>
+
+<p>這是一個很簡單的ruby class ,好像沒什麼功能，所以才說單純是為了練習
+在class裡有一個方法 add 可以用來加1</p>
+
+<p><code>tag.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Tag
+</span><span class='line'>  attr_reader :count
+</span><span class='line'>
+</span><span class='line'>  def initialize
+</span><span class='line'>    @count = 0
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def add
+</span><span class='line'>   @count += 1
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>spec</h4>
+
+<p>這邊不解說Rspec的寫法，下一篇會詳細說明</p>
+
+<p><code>tag_spec.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'spec_helper'
+</span><span class='line'>require 'tag'
+</span><span class='line'>
+</span><span class='line'>describe Tag do
+</span><span class='line'>  it 'tag count for each roll' do
+</span><span class='line'>    tag = Tag.new
+</span><span class='line'>    10.times { tag.add }
+</span><span class='line'>    expect(tag.count).to eq(10)
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>測試</h2>
+
+<p>可以直接測單一程式或是整個目錄</p>
+
+<p>單一程式</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rspec /spec/models/tag_spec.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/rspec/test_one_class.png" alt="Alt text" /></p>
+
+<p>測試整個目錄</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rspec /spec/models</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/rspec/test_models.png" alt="Alt text" /></p>
+
+<h2>心得</h2>
+
+<p>有做測試會比較有品質保障
+接下來還會有幾篇陸續介紹
+今天打完收工</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -728,6 +881,10 @@ class User def initialize(name) @name = name end # Instance method def say_hello
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/ruby-rspec/">Rspec 介紹</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/06/16/class-method-and-instance-method/">Ruby 裡的class Method 與 Instance Method 使用方式</a>
