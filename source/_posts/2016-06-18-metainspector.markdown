@@ -1,0 +1,90 @@
+---
+layout: post
+title: "metainspector gem 使用"
+date: 2016-06-18 20:57:58 +0800
+comments: true
+categories: gem
+---
+
+## metainspector 做什麼
+就像Facebook一樣，輸入了URL 他會自動的顯示小圖及一些說明，如果自己實作可能要寫一些爬蟲去抓一些html的內容回來
+metainspector 可以很簡單的實作這件事件
+
+[Git source](https://github.com/jaimeiniesta/metainspector)
+
+## 如何使用
+
+```
+gem 'metainspector'
+```
+
+在 Rails Console 中當然就可以測試了，我這邊預計來抓 title, description 及小圖
+以 Airbnb 為例
+
+```
+page = MetaInspector.new('http://www.airbnb.com')
+```
+從回傳的page中拿到 title, description及小圖
+這些api可以在官網找到
+```
+
+page.title
+page.description
+page.images.best
+```
+
+## 如Rails中使用ajax 來簡單的實作一下吧
+
+
+加上javascript, 偷懶的話可以在erb的最下面加上這段也可
+
+```
+<script>
+  $("#web_url").on("change",function(){
+    $.ajax({
+      url: '/scraper',
+      method: "post",
+      data: {url: $(this).val()},
+      success: function(data){
+        console.warn(data);
+        if(data){
+          $("#web_title").val(data.title);
+          $("#web_description").val(data.description);
+          $("#web_image").val(data.image);
+          $("#web_image_preview").attr("src", data.image).attr("style","width:100px")
+        }
+      }
+    });
+  });
+
+</script>
+```
+
+在controller中可以這麼寫
+
+```
+  def scraper
+   begin
+     page = MetaInspector.new(params[:url])
+     render json: {title: page.title, description: page.description, image: page.images.best}
+   rescue
+   end
+  end
+```
+
+Routes設定
+```
+Rails.application.routes.draw do
+  resources :webs
+  post "scraper" => "webs#scraper"
+  root "webs#index"
+end
+```
+## 畫面
+
+![Alt text](/images/scraper/before_view.png)
+
+輸入完url之後，其它欄位會自動抓回來
+![Alt text](/images/scraper/after_view.png)
+
+打完收工囉
