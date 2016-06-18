@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Gem | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/gem/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-06-18T10:39:38+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Settingslogic Gem 的使用]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/"/>
+    <updated>2016-06-18T10:00:55+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/18/settingslogic</id>
+    <content type="html"><![CDATA[<h2>什麼是 Settingslogic</h2>
+
+<p>Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, maybe you will enjoy it too. Settingslogic works with Rails, Sinatra, or any Ruby project.</p>
+
+<p><a href="https://github.com/binarylogic/settingslogic">Git source</a></p>
+
+<h2>安裝</h2>
+
+<p>Rails Gemfile中使用</p>
+
+<pre><code>gem 'settingslogic'
+</code></pre>
+
+<p>記得 bundle install</p>
+
+<h2>使用</h2>
+
+<p>在Rails model中建立一支 models class, 例如 : Fee</p>
+
+<pre><code>ass Fee &lt; Settingslogic
+
+  source "#{Rails.root}/config/fee.yml"
+  namespace Rails.env
+
+end
+</code></pre>
+
+<p>在 config 中 增新一支 fee.yml
+```
+defaults: &amp;default
+  salary:
+    sales: 0
+    staff: 0
+    staff_overtime: 0</p>
+
+<p>```</p>
+
+<p>大功告成</p>
+
+<h2>測試</h2>
+
+<p>在 Rails console 中就可以直接類似 Rails model 的方式操作它了</p>
+
+<p>例如: <code>Fee.salary</code></p>
+
+<p><img src="/images/settingslogic/settingslogic_test.png" alt="Alt text" /></p>
+]]></content>
+  </entry>
+  
+</feed>
