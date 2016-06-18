@@ -9,7 +9,9 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是 Settingslogic Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, &hellip;">
+  <meta name="description" content="metainspector 做什麼 就像Facebook一樣，輸入了URL 他會自動的顯示小圖及一些說明，如果自己實作可能要寫一些爬蟲去抓一些html的內容回來
+metainspector 可以很簡單的實作這件事件 Git source 如何使用 1
+gem 'metainspector' 在 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +67,149 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/18/scraper/">抓web網站小圖</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-18T21:53:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:53 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>metainspector 做什麼</h2>
+
+<p>就像Facebook一樣，輸入了URL 他會自動的顯示小圖及一些說明，如果自己實作可能要寫一些爬蟲去抓一些html的內容回來
+metainspector 可以很簡單的實作這件事件</p>
+
+<p><a href="https://github.com/jaimeiniesta/metainspector">Git source</a></p>
+
+<h2>如何使用</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'metainspector'
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在 Rails Console 中當然就可以測試了，我這邊預計來抓 <code>title, description 及小圖</code>
+以 Airbnb 為例</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>page = MetaInspector.new('http://www.airbnb.com')</span></code></pre></td></tr></table></div></figure>
+
+
+<p>從回傳的page中拿到 title, description及小圖
+這些api可以在官網找到</p>
+
+<p><code>
+page.title
+page.description
+page.images.best
+</code></p>
+
+<h2>如Rails中使用ajax 來簡單的實作一下吧</h2>
+
+<p>加上javascript, 偷懶的話可以在erb的最下面加上這段也可</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script&gt;
+</span><span class='line'>  $("#web_url").on("change",function(){
+</span><span class='line'>    $.ajax({
+</span><span class='line'>      url: '/scraper',
+</span><span class='line'>      method: "post",
+</span><span class='line'>      data: {url: $(this).val()},
+</span><span class='line'>      success: function(data){
+</span><span class='line'>        console.warn(data);
+</span><span class='line'>        if(data){
+</span><span class='line'>          $("#web_title").val(data.title);
+</span><span class='line'>          $("#web_description").val(data.description);
+</span><span class='line'>          $("#web_image").val(data.image);
+</span><span class='line'>          $("#web_image_preview").attr("src", data.image).attr("style","width:100px")
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    });
+</span><span class='line'>  });
+</span><span class='line'>
+</span><span class='line'>&lt;/script&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在controller中可以這麼寫</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def scraper
+</span><span class='line'> begin
+</span><span class='line'>   page = MetaInspector.new(params[:url])
+</span><span class='line'>   render json: {title: page.title, description: page.description, image: page.images.best}
+</span><span class='line'> rescue
+</span><span class='line'> end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Routes設定</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.application.routes.draw do
+</span><span class='line'>  resources :webs
+</span><span class='line'>  post "scraper" =&gt; "webs#scraper"
+</span><span class='line'>  root "webs#index"
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>畫面</h2>
+
+<p>輸入完url之後，其它欄位會自動抓回來
+<br/>
+<img src="/images/scraper/before_view.png" height="100" width="300" alt="Alt text" />
+<br/>
+<img src="/images/scraper/after_view.png" height="100" width="300" alt="Alt text" /></p>
+
+<p>打完收工囉</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -968,6 +1113,10 @@ Making TDD Productive and Fun.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/06/18/scraper/">抓web網站小圖</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/06/18/settingslogic/">Settingslogic Gem 的使用</a>
       </li>
     
@@ -981,10 +1130,6 @@ Making TDD Productive and Fun.</p>
     
       <li class="post">
         <a href="/blog/2016/06/14/use-acts-as-taggable-on-gem/">Acts_as_taggable_on Gem 介紹</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/10/reactjs-1/">認識 Reactjs</a>
       </li>
     
   </ul>
