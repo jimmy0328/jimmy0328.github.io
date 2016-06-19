@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-18T21:58:55+08:00</updated>
+  <updated>2016-06-19T22:40:22+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用 Roo Gem 來讀取 Excel And]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/"/>
+    <updated>2016-06-19T22:24:45+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/19/roo-gem</id>
+    <content type="html"><![CDATA[<h2>什麼是 roo</h2>
+
+<p>用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
+這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能</p>
+
+<h2>如何使用</h2>
+
+<pre><code class="`">  gem install roo
+</code></pre>
+
+<p> 另外如果有編碼的問題，請也一併用 iconv 來處理</p>
+
+<h2>範例</h2>
+
+<p>簡單的說明一下，假設我有一份 xlsx 的檔案，如下圖</p>
+
+<p><img src="http://jimmy0328.github.io/images/roo/xlsx_file.png" alt="Alt text" /></p>
+
+<p>接下來使用 roo 來簡單的讀取資料
+這邊我寫一支簡單的ruby 來測試一下，所以當我執行 <code>Excel.import("../hotels.xlsx")</code> 就可以把我要的xlsx試著print出來</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'roo'
+</span><span class='line'>require 'iconv'
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>class Hotel
+</span><span class='line'>  def initialize(name, address, coordinates)
+</span><span class='line'>    @name = name
+</span><span class='line'>    @address = address
+</span><span class='line'>    @coordinates = coordinates
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def print
+</span><span class='line'>    "#{@name} | #{@address} | #{@coordinates}"
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>class Excel
+</span><span class='line'>
+</span><span class='line'>  def self.import(file_path)
+</span><span class='line'>    xlsx = Roo::Spreadsheet.open(file_path)
+</span><span class='line'>    xlsx.first_row.upto(xlsx.last_row) do |row|
+</span><span class='line'>      name = xlsx.cell(row,'A')
+</span><span class='line'>      address = xlsx.cell(row,'B')
+</span><span class='line'>      coordinates = xlsx.cell(row,'C')
+</span><span class='line'>      puts Hotel.new(name, address, coordinates).print
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Excel.import("../hotels.xlsx")
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成，下一篇再來實作一個檔案上傳可以import的功能</p>
+
+<h2>參考資料</h2>
+
+<p><a href="http://roo.rubyforge.org/">http://roo.rubyforge.org/</a>
+[<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>] (<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>)
+<a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true">Railscasts</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[抓web網站小圖]]></title>

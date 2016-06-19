@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用 Roo Gem 來讀取 Excel And - 熊爸天下</title>
+  <meta name="author" content="Jimmy Lin">
+
+  
+  <meta name="description" content="什麼是 roo 用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
+這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能 如何使用 gem install roo 另外如果有編碼的問題，請也一併用 iconv 來處理 範例 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">熊爸天下</a></h1>
+  
+    <h2>技術筆記/生活點滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jimmy0328.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">使用 Roo Gem 來讀取 Excel And</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-19T22:24:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:24 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>什麼是 roo</h2>
+
+<p>用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
+這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能</p>
+
+<h2>如何使用</h2>
+
+<pre><code class="`">  gem install roo
+</code></pre>
+
+<p> 另外如果有編碼的問題，請也一併用 iconv 來處理</p>
+
+<h2>範例</h2>
+
+<p>簡單的說明一下，假設我有一份 xlsx 的檔案，如下圖</p>
+
+<p><img src="/images/roo/xlsx_file.png" alt="Alt text" /></p>
+
+<p>接下來使用 roo 來簡單的讀取資料
+這邊我寫一支簡單的ruby 來測試一下，所以當我執行 <code>Excel.import("../hotels.xlsx")</code> 就可以把我要的xlsx試著print出來</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'roo'
+</span><span class='line'>require 'iconv'
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>class Hotel
+</span><span class='line'>  def initialize(name, address, coordinates)
+</span><span class='line'>    @name = name
+</span><span class='line'>    @address = address
+</span><span class='line'>    @coordinates = coordinates
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def print
+</span><span class='line'>    "#{@name} | #{@address} | #{@coordinates}"
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>class Excel
+</span><span class='line'>
+</span><span class='line'>  def self.import(file_path)
+</span><span class='line'>    xlsx = Roo::Spreadsheet.open(file_path)
+</span><span class='line'>    xlsx.first_row.upto(xlsx.last_row) do |row|
+</span><span class='line'>      name = xlsx.cell(row,'A')
+</span><span class='line'>      address = xlsx.cell(row,'B')
+</span><span class='line'>      coordinates = xlsx.cell(row,'C')
+</span><span class='line'>      puts Hotel.new(name, address, coordinates).print
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Excel.import("../hotels.xlsx")
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成，下一篇再來實作一個檔案上傳可以import的功能</p>
+
+<h2>參考資料</h2>
+
+<p><a href="http://roo.rubyforge.org/">http://roo.rubyforge.org/</a>
+[<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>] (<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>)
+<a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true">Railscasts</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jimmy Lin</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-06-19T22:24:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:24 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/gem/'>gem</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/18/scraper/" title="Previous Post: 抓web網站小圖">&laquo; 抓web網站小圖</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel And</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/18/scraper/">抓web網站小圖</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/18/settingslogic/">Settingslogic Gem 的使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/ruby-rspec/">Rspec 介紹</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/16/class-method-and-instance-method/">Ruby 裡的class Method 與 Instance Method 使用方式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jimmy Lin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
