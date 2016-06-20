@@ -1,0 +1,90 @@
+---
+layout: post
+title: "sidekiq 初體驗"
+date: 2016-06-20 21:49:24 +0800
+comments: true
+categories: Sidekiq
+---
+
+Simple, efficient background processing for Ruby.
+
+之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習
+
+## 安裝
+
+#### Step1 : 建立一個目錄
+
+```
+mkdir MyJob
+```
+
+#### Step2 : 在MyJob目錄中建立一個Gemfile
+
+```
+cd MyJob
+```
+```
+touch Gemfile
+```
+
+Gemfile 如下
+```
+source "https://rubygems.org"
+
+gem 'sidekiq'
+```
+之後記得 bundle install
+
+
+#### Step3 : 撰寫ruby程式
+
+myworker.rb
+```
+require "sidekiq"
+
+Sidekiq.configure_client do |config|
+  config.redis = { db: 1 }
+end
+
+Sidekiq.configure_server do |config|
+  config.redis = { db: 1 }
+end
+
+
+class MyWorker
+
+  include Sidekiq::Worker
+
+  def perform(name)
+    puts "Hello , #{name}"
+  end
+end
+
+```
+
+#### Step4 : 測試
+
+執行sidekiq
+```
+bundle exec sidekiq -r ./myworker.rb
+```
+
+進入console 模式測試 worker
+```
+irb -r ./myworker.rb
+```
+在irb中測試一下
+
+```
+MyWorker.perform_async("Ruby")
+MyWorker.perform_in(5.minutes, "Ruby")
+
+```
+![Alt text](/images/sidekiq/sidekiq_test.png)
+
+打完收工，之後當然是要把sidekiq 串接到Rails中，之後會再介紹
+
+## 參考資料
+[You Tube 介紹](https://www.youtube.com/watch?v=bfPb1zD91Rg&list=PLjeHh2LSCFrWGT5uVjUuFKAcrcj5kSai1&index=1)
+
+[sidekiq wiki](https://github.com/mperham/sidekiq/wiki)
