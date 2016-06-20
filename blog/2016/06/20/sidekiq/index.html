@@ -5,13 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>抓web網站小圖 - 熊爸天下</title>
+  <title>Sidekiq 初體驗 - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="metainspector 做什麼 就像Facebook一樣，輸入了URL 他會自動的顯示小圖及一些說明，如果自己實作可能要寫一些爬蟲去抓一些html的內容回來
-metainspector 可以很簡單的實作這件事件 Git source 如何使用 1
-gem 'metainspector' 在 &hellip;">
+  <meta name="description" content="Simple, efficient background processing for Ruby. 之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習 安裝 Step1 : 建立一個目錄 1
+mkdir MyJob Step2 : &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +19,7 @@ gem 'metainspector' 在 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/18/scraper/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/20/sidekiq/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -70,7 +69,7 @@ gem 'metainspector' 在 &hellip;">
   
   <header>
     
-      <h1 class="entry-title">抓web網站小圖</h1>
+      <h1 class="entry-title">Sidekiq 初體驗</h1>
     
     
       <p class="meta">
@@ -79,46 +78,50 @@ gem 'metainspector' 在 &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-06-18T21:53:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:53 pm</span></time>
+<time class='entry-date' datetime='2016-06-20T21:49:24+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:49 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>metainspector 做什麼</h2>
+<div class="entry-content"><p>Simple, efficient background processing for Ruby.</p>
 
-<p>就像Facebook一樣，輸入了URL 他會自動的顯示小圖及一些說明，如果自己實作可能要寫一些爬蟲去抓一些html的內容回來
-metainspector 可以很簡單的實作這件事件</p>
+<p>之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習</p>
 
-<p><a href="https://github.com/jaimeiniesta/metainspector">Git source</a></p>
+<h2>安裝</h2>
 
-<h2>如何使用</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'metainspector'
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在 Rails Console 中當然就可以測試了，我這邊預計來抓 <code>title, description 及小圖</code>
-以 Airbnb 為例</p>
+<h4>Step1 : 建立一個目錄</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>page = MetaInspector.new('http://www.airbnb.com')</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir MyJob</span></code></pre></td></tr></table></div></figure>
 
 
-<p>從回傳的page中拿到 title, description及小圖
-這些api可以在官網找到</p>
+<h4>Step2 : 在MyJob目錄中建立一個Gemfile</h4>
 
-<p><code>
-page.title
-page.description
-page.images.best
-</code></p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd MyJob</span></code></pre></td></tr></table></div></figure>
 
-<h2>如Rails中使用ajax 來簡單的實作一下吧</h2>
 
-<p>加上javascript, 偷懶的話可以在erb的最下面加上這段也可</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>touch Gemfile</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Gemfile 如下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>source "https://rubygems.org"
+</span><span class='line'>
+</span><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>之後記得 bundle install</p>
+
+<h4>Step3 : 撰寫ruby程式</h4>
+
+<p>myworker.rb</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -139,68 +142,60 @@ page.images.best
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script&gt;
-</span><span class='line'>  $("#web_url").on("change",function(){
-</span><span class='line'>    $.ajax({
-</span><span class='line'>      url: '/scraper',
-</span><span class='line'>      method: "post",
-</span><span class='line'>      data: {url: $(this).val()},
-</span><span class='line'>      success: function(data){
-</span><span class='line'>        console.warn(data);
-</span><span class='line'>        if(data){
-</span><span class='line'>          $("#web_title").val(data.title);
-</span><span class='line'>          $("#web_description").val(data.description);
-</span><span class='line'>          $("#web_image").val(data.image);
-</span><span class='line'>          $("#web_image_preview").attr("src", data.image).attr("style","width:100px")
-</span><span class='line'>        }
-</span><span class='line'>      }
-</span><span class='line'>    });
-</span><span class='line'>  });
+</pre></td><td class='code'><pre><code class=''><span class='line'>require "sidekiq"
 </span><span class='line'>
-</span><span class='line'>&lt;/script&gt;</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>Sidekiq.configure_client do |config|
+</span><span class='line'>  config.redis = { db: 1 }
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Sidekiq.configure_server do |config|
+</span><span class='line'>  config.redis = { db: 1 }
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>class MyWorker
+</span><span class='line'>
+</span><span class='line'>  include Sidekiq::Worker
+</span><span class='line'>
+</span><span class='line'>  def perform(name)
+</span><span class='line'>    puts "Hello , #{name}"
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>在controller中可以這麼寫</p>
+<h4>Step4 : 測試</h4>
+
+<p>執行sidekiq</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle exec sidekiq -r ./myworker.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>進入console 模式測試 worker</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb -r ./myworker.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在irb中測試一下</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def scraper
-</span><span class='line'> begin
-</span><span class='line'>   page = MetaInspector.new(params[:url])
-</span><span class='line'>   render json: {title: page.title, description: page.description, image: page.images.best}
-</span><span class='line'> rescue
-</span><span class='line'> end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>MyWorker.perform_async("Ruby")
+</span><span class='line'>MyWorker.perform_in(5.minutes, "Ruby")
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Routes設定</p>
+<p><img src="/images/sidekiq/sidekiq_test.png" alt="Alt text" /></p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.application.routes.draw do
-</span><span class='line'>  resources :webs
-</span><span class='line'>  post "scraper" =&gt; "webs#scraper"
-</span><span class='line'>  root "webs#index"
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+<p>打完收工，之後當然是要把sidekiq 串接到Rails中，之後會再介紹</p>
 
+<h2>參考資料</h2>
 
-<h2>畫面</h2>
+<p><a href="https://www.youtube.com/watch?v=bfPb1zD91Rg&amp;list=PLjeHh2LSCFrWGT5uVjUuFKAcrcj5kSai1&amp;index=1">You Tube 介紹</a></p>
 
-<p>輸入完url之後，其它欄位會自動抓回來
-<br/>
-<img src="/images/scraper/before_view.png" height="100" width="300" alt="Alt text" />
-<br/>
-<img src="/images/scraper/after_view.png" height="100" width="300" alt="Alt text" /></p>
-
-<p>打完收工囉</p>
+<p><a href="https://github.com/mperham/sidekiq/wiki">sidekiq wiki</a></p>
 </div>
 
 
@@ -216,15 +211,21 @@ page.images.best
 
 
 
-<time class='entry-date' datetime='2016-06-18T21:53:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:53 pm</span></time>
+<time class='entry-date' datetime='2016-06-20T21:49:24+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:49 pm</span></time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/sidekiq/'>sidekiq</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/18/scraper/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/18/scraper/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/20/sidekiq/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/20/sidekiq/" >Tweet</a>
   
   
   
@@ -233,10 +234,8 @@ page.images.best
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/06/18/settingslogic/" title="Previous Post: Settingslogic gem 的使用">&laquo; Settingslogic gem 的使用</a>
+        <a class="basic-alignment left" href="/blog/2016/06/19/roo-gem/" title="Previous Post: 使用 roo gem 來讀取 Excel 內容">&laquo; 使用 roo gem 來讀取 Excel 內容</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/06/19/roo-gem/" title="Next Post: 使用 roo gem 來讀取 Excel 內容">使用 roo gem 來讀取 Excel 內容 &raquo;</a>
       
     </p>
   </footer>

@@ -9,8 +9,8 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是 roo 用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
-這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能 如何使用 gem install roo 另外如果有編碼的問題，請也一併用 iconv 來處理 範例 &hellip;">
+  <meta name="description" content="Simple, efficient background processing for Ruby. 之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習 安裝 Step1 : 建立一個目錄 1
+mkdir MyJob Step2 : &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,7 +72,146 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel And</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/06/20/sidekiq/">Sidekiq 初體驗</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-20T21:49:24+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:49 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Simple, efficient background processing for Ruby.</p>
+
+<p>之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習</p>
+
+<h2>安裝</h2>
+
+<h4>Step1 : 建立一個目錄</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir MyJob</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step2 : 在MyJob目錄中建立一個Gemfile</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd MyJob</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>touch Gemfile</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Gemfile 如下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>source "https://rubygems.org"
+</span><span class='line'>
+</span><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>之後記得 bundle install</p>
+
+<h4>Step3 : 撰寫ruby程式</h4>
+
+<p>myworker.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require "sidekiq"
+</span><span class='line'>
+</span><span class='line'>Sidekiq.configure_client do |config|
+</span><span class='line'>  config.redis = { db: 1 }
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Sidekiq.configure_server do |config|
+</span><span class='line'>  config.redis = { db: 1 }
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>class MyWorker
+</span><span class='line'>
+</span><span class='line'>  include Sidekiq::Worker
+</span><span class='line'>
+</span><span class='line'>  def perform(name)
+</span><span class='line'>    puts "Hello , #{name}"
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step4 : 測試</h4>
+
+<p>執行sidekiq</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle exec sidekiq -r ./myworker.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>進入console 模式測試 worker</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb -r ./myworker.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在irb中測試一下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>MyWorker.perform_async("Ruby")
+</span><span class='line'>MyWorker.perform_in(5.minutes, "Ruby")
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/sidekiq/sidekiq_test.png" alt="Alt text" /></p>
+
+<p>打完收工，之後當然是要把sidekiq 串接到Rails中，之後會再介紹</p>
+
+<h2>參考資料</h2>
+
+<p><a href="https://www.youtube.com/watch?v=bfPb1zD91Rg&amp;list=PLjeHh2LSCFrWGT5uVjUuFKAcrcj5kSai1&amp;index=1">You Tube 介紹</a></p>
+
+<p><a href="https://github.com/mperham/sidekiq/wiki">sidekiq wiki</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel 內容</a></h1>
     
     
       <p class="meta">
@@ -1235,7 +1374,11 @@ Making TDD Productive and Fun.</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel And</a>
+        <a href="/blog/2016/06/20/sidekiq/">Sidekiq 初體驗</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel 內容</a>
       </li>
     
       <li class="post">
@@ -1248,10 +1391,6 @@ Making TDD Productive and Fun.</p>
     
       <li class="post">
         <a href="/blog/2016/06/17/ruby-rspec/">Rspec 介紹</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/16/class-method-and-instance-method/">Ruby 裡的class Method 與 Instance Method 使用方式</a>
       </li>
     
   </ul>
