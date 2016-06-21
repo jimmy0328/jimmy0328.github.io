@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rails5 Job With Sidekiq - 熊爸天下</title>
+  <meta name="author" content="Jimmy Lin">
+
+  
+  <meta name="description" content="以下都是以Mac環境為例，linux 及 window 就不好意思了 安裝 sidekiq 1. 首先，你的電腦必須安裝 Redis 資料庫，可以使用 Homebrew 安裝 1
+brew install redis 2. 在 Gemfile 中加入 1
+gem 'sidekiq' 3. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/21/rails5-job-with-sidekiq/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">熊爸天下</a></h1>
+  
+    <h2>技術筆記/生活點滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jimmy0328.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Rails5 Job With Sidekiq</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-21T16:38:19+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>4:38 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>以下都是以Mac環境為例，linux 及 window 就不好意思了</p>
+
+<h2>安裝 sidekiq</h2>
+
+<h4>1. 首先，你的電腦必須安裝 Redis 資料庫，可以使用 Homebrew 安裝</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install redis
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2. 在 Gemfile 中加入</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3. bundle install</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>4.加入 Job</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g job inspector</span></code></pre></td></tr></table></div></figure>
+
+
+<p>會產生 jobs 目錄及 一支 inspector_job.rb</p>
+
+<h4>5. 在inspector_job 中加入實作</h4>
+
+<p>在jobs/inspector_job.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class InspectorJob &lt; ApplicationJob
+</span><span class='line'>  queue_as :default
+</span><span class='line'>
+</span><span class='line'>  def perform(*args)
+</span><span class='line'>    puts "================== print inspector Job ============="
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>6. 宣告 job 使用sidekiq 來處理</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># in /config/application.rb
+</span><span class='line'>class Application &lt; Rails::Application
+</span><span class='line'>  # ...
+</span><span class='line'>  config.active_job.queue_adapter = :sidekiq
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>7. 加入redis 的config</h4>
+
+<p>新增 initializers/sidekiq.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Sidekiq.configure_server do |config|
+</span><span class='line'>  config.redis = Rails.application.secrets.redis
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Sidekiq.configure_client do |config|
+</span><span class='line'>  config.redis = Rails.application.secrets.redis
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>8. redis 的連線我寫在secret.yml</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>development:
+</span><span class='line'>   secret_key_base:
+</span><span class='line'>   redis:
+</span><span class='line'>    :url: redis://localhost:6379
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>9. 執行Job</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>InspectorJob.perform_later("xxxx")
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>10.  Run the worker</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle exec sidekiq -e development</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>worker: bundle exec sidekiq -c 10 -q priority -q default</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>安裝sidekiq web UI</h2>
+
+<h4>1. route.rb 加入</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'sidekiq/web'
+</span><span class='line'>
+</span><span class='line'>Rails.application.routes.draw do
+</span><span class='line'>...
+</span><span class='line'>  mount Sidekiq::Web, at: '/sidekiq'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2. gemfile 加入</h4>
+
+<p>Rails5 要用 sinatra master 的版本</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sinatra', github: 'sinatra'</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3. 查看 web UI</h4>
+
+<p><a href="http://localhost:3000/sidekiq">http://localhost:3000/sidekiq</a></p>
+
+<h2>測試</h2>
+
+<h4>1. 在專案下先執行sidekiq</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sidekiq</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. rails console</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>InspectorJob.perform_later("xxx")</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3.sidekiq log 會印出</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>2016-06-21T08:16:45.734Z 28527 TID-owmgdm1ak InspectorJob JID-fe520b589d7cbdbaa1f3bd5c INFO: start
+</span><span class='line'>================== print inspector Job =============
+</span><span class='line'>2016-06-21T08:16:45.738Z 28527 TID-owmgdm1ak InspectorJob JID-fe520b589d7cbdbaa1f3bd5c INFO: done: 0.004 sec</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>參考資料來源</h2>
+
+<p><a href="http://railscasts.com/episodes/366-sidekiq">http://railscasts.com/episodes/366-sidekiq</a>
+<a href="http://kakas-blog.logdown.com/posts/738075-used-in-rails-sidekiq">http://kakas-blog.logdown.com/posts/738075-used-in-rails-sidekiq</a>
+<a href="https://www.rubyplus.com/articles/3931-Rails-5-ActiveJob-Basics-with-Sidekiq">https://www.rubyplus.com/articles/3931-Rails-5-ActiveJob-Basics-with-Sidekiq</a>
+<a href="http://epigene.github.io/Rails5_Redis_And_Sidekiq/">http://epigene.github.io/Rails5_Redis_And_Sidekiq/</a>
+<a href="http://github.com/mperham/sidekiq/wiki/The-Basics">http://github.com/mperham/sidekiq/wiki/The-Basics</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jimmy Lin</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-06-21T16:38:19+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>4:38 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rails/'>rails</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/21/rails5-job-with-sidekiq/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/21/rails5-job-with-sidekiq/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/21/ruby-block-proc/" title="Previous Post: ruby 中的block 及 proc ">&laquo; ruby 中的block 及 proc </a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/21/rails5-job-with-sidekiq/">Rails5 Job With Sidekiq</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/21/ruby-block-proc/">Ruby 中的block 及 Proc</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/20/sidekiq/">Sidekiq 初體驗</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel 內容</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/18/scraper/">抓web網站小圖</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jimmy Lin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
