@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-20T22:48:35+08:00</updated>
+  <updated>2016-06-21T15:34:55+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,164 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby 中的block 及 Proc]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/21/ruby-block-proc/"/>
+    <updated>2016-06-21T11:23:17+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/21/ruby-block-proc</id>
+    <content type="html"><![CDATA[<h2>Block</h2>
+
+<p>目前最常見的寫法都是用block，主要是使用 do end 來構成一個block，例如</p>
+
+<pre><code>arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+arr.collect! do |n|
+  n * 2
+end
+</code></pre>
+
+<p>自己來寫一個看看</p>
+
+<pre><code>class Array
+  def foreach
+    self.each_with_index do |n, i|
+      self[i] = yield(n)
+    end
+  end
+end
+
+arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+arr.foreach do |n|
+  n * 2
+end
+</code></pre>
+
+<h2>Proc</h2>
+
+<p>這二種寫proc都可以
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>proc = Proc.new { puts &ldquo;this is proc new&rdquo;}
+</span><span class='line'>proc.call&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;proc = Proc.new do
+</span><span class='line'>  puts &ldquo;this is proc block too&rdquo;
+</span><span class='line'>end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;proc.call&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>使用lambda 的方式
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;proc = lambda{ puts &ldquo;lambda&rdquo;}
+</span><span class='line'>proc.call&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;proc = -&gt; { puts &ldquo;lambda too&rdquo;}
+</span><span class='line'>proc.call</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>lambda to block</h2>
+
+<p>printer 是一個lambda ，因為在 pls.each 後只能放block，但可以透過 &amp; 來將block 轉成 proc
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pls = [&ldquo;Ruby&rdquo;, &ldquo;Python&rdquo;, &ldquo;Java&rdquo;, &ldquo;PHP&rdquo;, &ldquo;Node&rdquo;]
+</span><span class='line'>pls.each do |pl|
+</span><span class='line'> puts &ldquo;I like #{pl} &rdquo;
+</span><span class='line'>end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;printer = lambda{|pl| puts &ldquo;I like #{pl}, too &rdquo; }
+</span><span class='line'>pls.each(&amp;printer)&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>
+</span><span class='line'>另外有常見的二種寫法，結果是一樣的
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt; tweets.map { |tweet| tweet.user }
+</span><span class='line'> tweets.map(&amp;:user)</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>option block</h2>
+
+<p>可以使用 block_given? 來判斷傳入的是不是block
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Timeline
+</span><span class='line'>  attr_accessor :tweets&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  def print
+</span><span class='line'>    if block_given?
+</span><span class='line'>      tweets.each { |tweet| puts yield tweet }
+</span><span class='line'>    else
+</span><span class='line'>      puts tweets.join(&ldquo;, &rdquo;)
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;timeline = Timeline.new
+</span><span class='line'>timeline.tweets = [&ldquo;Ruby&rdquo;, &ldquo;Python&rdquo;, &ldquo;Java&rdquo;, &ldquo;PHP&rdquo;, &ldquo;Node&rdquo;]&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;timeline.print
+</span><span class='line'>timeline.print { |tweet|
+</span><span class='line'> &ldquo;tweet: #{tweet}&rdquo;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>參考資料</h2>
+
+<ul>
+<li>CodeSchool</li>
+<li>[<a href="http://rubyer.me/blog/917/">http://rubyer.me/blog/917/</a>] (<a href="http://rubyer.me/blog/917/">http://rubyer.me/blog/917/</a>)</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby 裡的class Method 與 Instance Method 使用方式]]></title>
