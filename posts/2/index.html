@@ -9,9 +9,8 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="有許多網站都寫的很詳細了，這邊就做個簡單的整理就好
-這邊假設你己經有裝好ruby 及 bundler 環境，如果沒有安裝可以參考下方的參考連結
-步驗如下 建立github repository 必須先建立一個 repository, 在github 上可以有blog的方式，他的命名規則必須是 [ &hellip;">
+  <meta name="description" content="何謂 reactjs React 是Facebook 推出來的 JavaScript Library, 使用Virtual DOM 的方式處理，在效能部份也是比其它Library還要來的好的。
+官方連結: https://facebook.github.io/react/ React 的幾個概念 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +66,198 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/10/reactjs-1/">認識 Reactjs</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-10T18:29:05+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:29 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>何謂 reactjs</h2>
+
+<p><a href="https://facebook.github.io/react/"><img src="https://facebook.github.io/react/img/logo_og.png" width="200" alt="Alt text" /></a></p>
+
+<p>React 是Facebook 推出來的 JavaScript Library, 使用Virtual DOM 的方式處理，在效能部份也是比其它Library還要來的好的。
+官方連結: <a href="https://facebook.github.io/react/">https://facebook.github.io/react/</a></p>
+
+<h2>React 的幾個概念</h2>
+
+<ul>
+<li>Component</li>
+<li>JSX</li>
+<li>Virtual DOM</li>
+<li>Data Flow</li>
+</ul>
+
+
+<h2>reactjs Lifecycle</h2>
+
+<p><a href="https://facebook.github.io/react/docs/component-specs.html">https://facebook.github.io/react/docs/component-specs.html</a></p>
+
+<h2>Hello ReactJS</h2>
+
+<p>以下範例會使用到</p>
+
+<ul>
+<li>React.createClass</li>
+<li>render</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> &lt;!DOCTYPE html&gt;
+</span><span class='line'> &lt;html&gt;
+</span><span class='line'>
+</span><span class='line'> &lt;head&gt;
+</span><span class='line'>     &lt;meta charset="utf-8" /&gt;
+</span><span class='line'>     &lt;title&gt;Hello ReactJS&lt;/title&gt;
+</span><span class='line'>     &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"&gt;&lt;/script&gt;
+</span><span class='line'>     &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"&gt;&lt;/script&gt;
+</span><span class='line'>     &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"&gt;&lt;/script&gt;
+</span><span class='line'> &lt;/head&gt;
+</span><span class='line'>
+</span><span class='line'> &lt;body&gt;
+</span><span class='line'>     &lt;div id="example"&gt;&lt;/div&gt;
+</span><span class='line'>     &lt;script type="text/babel"&gt;
+</span><span class='line'>       var Hello = React.createClass({
+</span><span class='line'>         render: function() {
+</span><span class='line'>           return (
+</span><span class='line'>                &lt;div &gt;
+</span><span class='line'>                  Hello, ReactJS !
+</span><span class='line'>               &lt;/div&gt;
+</span><span class='line'>               );
+</span><span class='line'>           } });
+</span><span class='line'>           ReactDOM.render(&lt;Hello /&gt;, document.getElementById('example') );
+</span><span class='line'>     &lt;/script&gt;
+</span><span class='line'> &lt;/body&gt;
+</span><span class='line'>
+</span><span class='line'> &lt;/html&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>這是一個很簡單的的react範例</p>
+
+<p>首先，必須載入 react,react-dom 及 browser</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"&gt;&lt;/script&gt;
+</span><span class='line'>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"&gt;&lt;/script&gt;
+</span><span class='line'>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"&gt;&lt;/script&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指定一個 div id為example, react component 會將render 出來的DOM放在這個區塊裡</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div id="example"&gt;&lt;/div&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>這邊是一個 react component , 簡單的說明一下，使用 React.createClass 來建立 react component,</p>
+
+<p>在此component 的呈現，必須在 render 的方法內來回傳,這邊回傳的是 <div> Hello, ReactJS ! </div></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> var Hello  = React.createClass({
+</span><span class='line'>   render: function() {
+</span><span class='line'>     return (
+</span><span class='line'>          &lt;div &gt;
+</span><span class='line'>            Hello, ReactJS !
+</span><span class='line'>         &lt;/div&gt;
+</span><span class='line'>      );
+</span><span class='line'>   } });</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最後上面的 react compoent 指命為 Hello, 在Hello Component的內容會被 render 到 example 的 div 內</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ReactDOM.render(&lt;CommentBox /&gt;, document.getElementById('example') );</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，在script 的type 必須宣告為 text/babel</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script type="text/babel"&gt;
+</span><span class='line'>// code
+</span><span class='line'>
+</span><span class='line'>&lt;/script&gt;
+</span><span class='line'>
+</span><span class='line'>大功告成
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Demo 練習</h2>
+
+<p>入門練習可以參考這以下</p>
+
+<ul>
+<li><a href="https://github.com/ruanyf/react-demos">https://github.com/ruanyf/react-demos</a></li>
+<li><a href="http://blog.kdchang.cc/2015/10/reactjs-notes-intro.html">http://blog.kdchang.cc/2015/10/reactjs-notes-intro.html</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -210,6 +401,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/06/23/webpack/">Webpack 介紹</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/06/21/rails5-job-with-sidekiq/">Rails5 Job With Sidekiq</a>
       </li>
     
@@ -223,10 +418,6 @@
     
       <li class="post">
         <a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel 內容</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/18/scraper/">抓web網站小圖</a>
       </li>
     
   </ul>

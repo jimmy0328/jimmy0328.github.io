@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Webpack, | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/webpack/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-06-23T12:04:43+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Webpack 介紹]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/23/webpack/"/>
+    <updated>2016-06-23T00:16:21+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/23/webpack</id>
+    <content type="html"><![CDATA[<h2>why webpack</h2>
+
+<p>It&rsquo;s like browserify but can split your app into multiple files. If you have multiple pages in a single-page app, the user only downloads code for just that page. If they go to another page, they don&rsquo;t redownload common code.</p>
+
+<p>It often replaces grunt or gulp because it can build and bundle CSS, preprocessed CSS, compile-to-JS languages and images, among other things.</p>
+
+<p>[webpack howto] (<a href="https://github.com/petehunt/webpack-howto#1-why-webpack">https://github.com/petehunt/webpack-howto#1-why-webpack</a>)</p>
+
+<p>還沒有時間消化，先整理在以下圖表</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">參數 </th>
+<th style="text-align:left;"> 說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">javascript </td>
+<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#4-compile-to-js-languages">https://github.com/petehunt/webpack-howto#4-compile-to-js-languages</a></td>
+</tr>
+<tr>
+<td style="text-align:left;">stylesheets and image </td>
+<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#5-stylesheets-and-images">https://github.com/petehunt/webpack-howto#5-stylesheets-and-images</a></td>
+</tr>
+<tr>
+<td style="text-align:left;">multi entrypoints </td>
+<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#7-multiple-entrypoints">https://github.com/petehunt/webpack-howto#7-multiple-entrypoints</a></td>
+</tr>
+<tr>
+<td style="text-align:left;">Async loading </td>
+<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#9-async-loading">https://github.com/petehunt/webpack-howto#9-async-loading</a></td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>如何執行 webpack</h2>
+
+<p> 在下面的安裝做完之後，可以回來這邊測試一下</p>
+
+<ul>
+<li>webpack <code>for building once for development</code></li>
+<li>webpack -p <code>for building once for production (minification)</code></li>
+<li>webpack &ndash;watch <code>for continuous incremental build in development (fast!)</code></li>
+<li>webpack -d <code>to include source maps</code></li>
+</ul>
+
+
+<p>[webpack howto] (<a href="https://github.com/petehunt/webpack-howto#3-how-to-invoke-webpack">https://github.com/petehunt/webpack-howto#3-how-to-invoke-webpack</a>)</p>
+
+<h2>說明</h2>
+
+<p>簡單的說，他是在幫忙處理前端效能最佳化工具的一種，載入你要載入的程式，把 <strong>css, js, image&hellip; 等</strong>多個檔案的，分別壓縮成一支程式</p>
+
+<h2>安裝</h2>
+
+<h3>npm init</h3>
+
+<p>安裝完畢會產生一支 package.json
+<code>
+npm init
+</code></p>
+
+<h3>安裝react 並且與dependency 一起裝</h3>
+
+<p>此時會把相關的套件一起安裝，並且放在 node_modules的目錄下</p>
+
+<pre><code>npm install react react-dom --save
+</code></pre>
+
+<h3>安裝 babel</h3>
+
+<pre><code>npm install babel-loader babel-core babel-preset-es2015 babel-preset-react
+</code></pre>
+
+<h3>新增 webpack.config.js</h3>
+
+<pre><code>touch webpack.config.js
+</code></pre>
+
+<p>內容如下</p>
+
+<pre><code>module.exports = {
+  entry: './main.js',
+  output: {
+     path: './',
+     filename: 'index.js',
+  },
+  devServer: {
+    inline: true,
+    port: 8888
+  },
+  module:{
+    loaders: [
+      {
+        text: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: {
+          presets: ['es2015', 'react']
+        }
+      }
+    ]
+  }
+}
+[webpack howto] (https://github.com/petehunt/webpack-howto#4-compile-to-js-languages)
+</code></pre>
+
+<h3>新增幾支要測試的程式</h3>
+
+<pre><code>touch index.html App.js main.js
+</code></pre>
+
+<p>index.html</p>
+
+<pre><code>&lt;html&gt;
+ &lt;head&gt;
+   &lt;meta charset="UTF-8"&gt;
+   &lt;title&gt; webpack test &lt;/title&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+   &lt;div id="app"&gt;&lt;/div&gt;
+   &lt;script src="index.js"&gt; &lt;/script&gt;
+ &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>App.js</p>
+
+<pre><code>import React from 'react';
+class App extends React.Component{
+
+  render(){
+    return(
+      &lt;div&gt; Hello, My first webpack page &lt;/div&gt;
+    )
+  }
+}
+
+export default App
+</code></pre>
+
+<p>main.js</p>
+
+<pre><code>import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App'
+
+ReactDOM.render(&lt;App /&gt;, document.getElementById('app'));
+</code></pre>
+
+<h3>修改package.json</h3>
+
+<p>我們修改可以透過 webpac-dev-server 來啟動
+webpack-dev-server 是個小型的 node.js express server, 所以在啟動project我們會用到它</p>
+
+<pre><code>{
+  "name": "webpack_sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0"
+  }
+}
+</code></pre>
+
+<h3>大功告成，測試吧</h3>
+
+<p><a href="http://localhost:8888">http://localhost:8888</a></p>
+
+<h2>參考資料</h2>
+
+<ul>
+<li><a href="https://github.com/petehunt/webpack-howto">https://github.com/petehunt/webpack-howto</a></li>
+<li><a href="https://rhadow.github.io/2015/03/23/webpackIntro/">https://rhadow.github.io/2015/03/23/webpackIntro/</a></li>
+<li><a href="https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals">https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals</a></li>
+<li><a href="https://github.com/petehunt/webpack-howto/blob/master/README-zh.md">https://github.com/petehunt/webpack-howto/blob/master/README-zh.md</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
