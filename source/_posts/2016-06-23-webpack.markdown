@@ -1,0 +1,182 @@
+---
+layout: post
+title: " webpack 介紹"
+date: 2016-06-23 00:16:21 +0800
+comments: true
+categories: webpack, react
+---
+
+## why webpack
+
+It's like browserify but can split your app into multiple files. If you have multiple pages in a single-page app, the user only downloads code for just that page. If they go to another page, they don't redownload common code.
+
+It often replaces grunt or gulp because it can build and bundle CSS, preprocessed CSS, compile-to-JS languages and images, among other things.
+
+[webpack howto] (https://github.com/petehunt/webpack-howto#1-why-webpack)
+
+還沒有時間消化，先整理在以下圖表
+
+參數 | 說明 
+:---|:----
+javascript | https://github.com/petehunt/webpack-howto#4-compile-to-js-languages
+stylesheets and image | https://github.com/petehunt/webpack-howto#5-stylesheets-and-images
+multi entrypoints | https://github.com/petehunt/webpack-howto#7-multiple-entrypoints
+Async loading | https://github.com/petehunt/webpack-howto#9-async-loading
+
+
+  
+## 如何執行 webpack
+
+ 在下面的安裝做完之後，可以回來這邊測試一下
+
+ -  webpack `for building once for development`
+ -  webpack -p `for building once for production (minification)`
+ -  webpack --watch `for continuous incremental build in development (fast!)`
+ -  webpack -d `to include source maps`
+
+[webpack howto] (https://github.com/petehunt/webpack-howto#3-how-to-invoke-webpack)
+
+## 說明
+
+簡單的說，他是在幫忙處理前端效能最佳化工具的一種，載入你要載入的程式，把 **css, js, image... 等**多個檔案的，分別壓縮成一支程式
+
+## 安裝
+
+### npm init
+安裝完畢會產生一支 package.json
+```
+npm init
+```
+
+### 安裝react 並且與dependency 一起裝
+此時會把相關的套件一起安裝，並且放在 node_modules的目錄下
+
+```
+npm install react react-dom --save
+```
+
+### 安裝 babel
+```
+npm install babel-loader babel-core babel-preset-es2015 babel-preset-react
+```
+
+### 新增 webpack.config.js
+
+```
+touch webpack.config.js
+```
+
+內容如下
+
+```
+module.exports = {
+  entry: './main.js',
+  output: {
+     path: './',
+     filename: 'index.js',
+  },
+  devServer: {
+    inline: true,
+    port: 8888
+  },
+  module:{
+    loaders: [
+      {
+        text: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: {
+          presets: ['es2015', 'react']
+        }
+      }
+    ]
+  }
+}
+[webpack howto] (https://github.com/petehunt/webpack-howto#4-compile-to-js-languages)
+```
+
+### 新增幾支要測試的程式
+```
+touch index.html App.js main.js
+```
+
+index.html
+
+```
+<html>
+ <head>
+   <meta charset="UTF-8">
+   <title> webpack test </title>
+ </head>
+ <body>
+   <div id="app"></div>
+   <script src="index.js"> </script>
+ </body>
+</html>
+```
+
+App.js
+
+```
+import React from 'react';
+class App extends React.Component{
+
+  render(){
+    return(
+      <div> Hello, My first webpack page </div>
+    )
+  }
+}
+
+export default App
+```
+
+main.js
+
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App'
+
+ReactDOM.render(<App />, document.getElementById('app'));
+```
+
+### 修改package.json
+
+我們修改可以透過 webpac-dev-server 來啟動
+webpack-dev-server 是個小型的 node.js express server, 所以在啟動project我們會用到它
+
+```
+{
+  "name": "webpack_sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0"
+  }
+}
+
+```
+
+### 大功告成，測試吧
+
+http://localhost:8888
+
+
+## 參考資料
+
+- https://github.com/petehunt/webpack-howto
+- https://rhadow.github.io/2015/03/23/webpackIntro/
+- https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals
+- https://github.com/petehunt/webpack-howto/blob/master/README-zh.md
+
+
+
+
