@@ -1,0 +1,104 @@
+---
+layout: post
+title: "Rails 多國語系- rails_i18n"
+date: 2016-06-23 23:49:43 +0800
+comments: true
+categories: gem
+---
+
+
+## 說明
+在Rails中要實現多國語系是一件很簡單的事，只要安裝 rails-i18n 就可以很輕鬆的實現了
+
+## 安裝
+
+##### 安裝 rails-i18n
+```
+gem 'rails-i18n'
+```
+記得 bundle install
+
+#### 在application.rb 中宣告
+
+```
+略
+config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}').to_s]
+config.i18n.default_locale = :"zh-TW"
+config.i18n.available_locales = [:en, :"zh-TW"]
+略
+```
+
+在application_controller.rb 中加入 locale 的判斷
+我們希望在url後面帶上locale來改變語系，例如: locale=en
+```
+略
+
+before_action :set_locale
+
+def set_locale
+  if params[:locale] && I18n.available_locales.include?( params[:locale].to_sym )
+     session[:locale] = params[:locale]
+  end
+   I18n.locale = session[:locale] || I18n.default_locale
+end
+
+略
+```
+
+## 設定多國語系的內容
+以中文與英文二個語系為例
+在locales中加入
+
+![Alt text](/images/i18n/locale_folder.png)
+
+
+locales/post/en.yml
+```
+en:
+  post:
+    title: "Title"
+    context: "Context"
+```
+
+locales/post/zh-TW.yml
+```
+zh-TW:
+  post:
+    title: "標題"
+    context: "內容"
+```
+
+## 使用方式
+
+在 erb 中使用 t("yml的設定方式")
+```
+略
+  <thead>
+    <tr>
+      <th><%= t("post.title") %></th>
+      <th><%= t("post.context") %></th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+略
+
+```
+
+## 測試
+
+http://localhost:3000?locale=en
+
+![Alt text](/images/i18n/locale_test_en.png)
+
+http://localhost:3000?locale=zh-TW
+
+![Alt text](/images/i18n/locale_test_zh.png)
+
+
+## 參考資料
+
+http://guides.rubyonrails.org/i18n.html
+http://juanitofatas.com/2014/06/25/rails-i18n-intro/
+https://github.com/svenfuchs/rails-i18n
+
+
