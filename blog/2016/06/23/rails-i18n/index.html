@@ -5,12 +5,18 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Sidekiq 初體驗 - 熊爸天下</title>
+  <title>Rails 多國語系- Rails_i18n - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="Simple, efficient background processing for Ruby. 之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習 安裝 Step1 : 建立一個目錄 1
-mkdir MyJob Step2 : &hellip;">
+  <meta name="description" content="說明 在Rails中要實現多國語系是一件很簡單的事，只要安裝 rails-i18n 就可以很輕鬆的實現了 安裝 安裝 rails-i18n 1
+gem 'rails-i18n' 記得 bundle install 在application.rb 中宣告 1
+2
+3
+4
+5
+略
+config. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +25,7 @@ mkdir MyJob Step2 : &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/20/sidekiq/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/23/rails-i18n/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -69,7 +75,7 @@ mkdir MyJob Step2 : &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Sidekiq 初體驗</h1>
+      <h1 class="entry-title">Rails 多國語系- Rails_i18n</h1>
     
     
       <p class="meta">
@@ -78,50 +84,43 @@ mkdir MyJob Step2 : &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-06-20T21:49:24+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:49 pm</span></time>
+<time class='entry-date' datetime='2016-06-23T23:49:43+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>11:49 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Simple, efficient background processing for Ruby.</p>
+<div class="entry-content"><h2>說明</h2>
 
-<p>之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習</p>
+<p>在Rails中要實現多國語系是一件很簡單的事，只要安裝 rails-i18n 就可以很輕鬆的實現了</p>
 
 <h2>安裝</h2>
 
-<h4>Step1 : 建立一個目錄</h4>
+<h5>安裝 rails-i18n</h5>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir MyJob</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'rails-i18n'</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>Step2 : 在MyJob目錄中建立一個Gemfile</h4>
+<p>記得 bundle install</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd MyJob</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>touch Gemfile</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Gemfile 如下</p>
+<h4>在application.rb 中宣告</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>source "https://rubygems.org"
-</span><span class='line'>
-</span><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}').to_s]
+</span><span class='line'>config.i18n.default_locale = :"zh-TW"
+</span><span class='line'>config.i18n.available_locales = [:en, :"zh-TW"]
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
 
 
-<p>之後記得 bundle install</p>
-
-<h4>Step3 : 撰寫ruby程式</h4>
-
-<p>myworker.rb</p>
+<p>在application_controller.rb 中加入 locale 的判斷
+我們希望在url後面帶上locale來改變語系，例如: locale=en</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -135,67 +134,91 @@ mkdir MyJob Step2 : &hellip;">
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require "sidekiq"
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
 </span><span class='line'>
-</span><span class='line'>Sidekiq.configure_client do |config|
-</span><span class='line'>  config.redis = { db: 1 }
-</span><span class='line'>end
+</span><span class='line'>before_action :set_locale
 </span><span class='line'>
-</span><span class='line'>Sidekiq.configure_server do |config|
-</span><span class='line'>  config.redis = { db: 1 }
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>class MyWorker
-</span><span class='line'>
-</span><span class='line'>  include Sidekiq::Worker
-</span><span class='line'>
-</span><span class='line'>  def perform(name)
-</span><span class='line'>    puts "Hello , #{name}"
+</span><span class='line'>def set_locale
+</span><span class='line'>  if params[:locale] && I18n.available_locales.include?( params[:locale].to_sym )
+</span><span class='line'>     session[:locale] = params[:locale]
 </span><span class='line'>  end
+</span><span class='line'>   I18n.locale = session[:locale] || I18n.default_locale
 </span><span class='line'>end
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>Step4 : 測試</h4>
+<h2>設定多國語系的內容</h2>
 
-<p>執行sidekiq</p>
+<p>以中文與英文二個語系為例
+在locales中加入</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bundle exec sidekiq -r ./myworker.rb</span></code></pre></td></tr></table></div></figure>
+<p><img src="/images/i18n/locale_folder.png" alt="Alt text" /></p>
 
-
-<p>進入console 模式測試 worker</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb -r ./myworker.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在irb中測試一下</p>
+<p>locales/post/en.yml</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>MyWorker.perform_async("Ruby")
-</span><span class='line'>MyWorker.perform_in(5.minutes, "Ruby")
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>en:
+</span><span class='line'>  post:
+</span><span class='line'>    title: "Title"
+</span><span class='line'>    context: "Context"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>locales/post/zh-TW.yml</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>zh-TW:
+</span><span class='line'>  post:
+</span><span class='line'>    title: "標題"
+</span><span class='line'>    context: "內容"</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用方式</h2>
+
+<p>在 erb 中使用 t(&ldquo;yml的設定方式&rdquo;)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>  &lt;thead&gt;
+</span><span class='line'>    &lt;tr&gt;
+</span><span class='line'>      &lt;th&gt;&lt;%= t("post.title") %&gt;&lt;/th&gt;
+</span><span class='line'>      &lt;th&gt;&lt;%= t("post.context") %&gt;&lt;/th&gt;
+</span><span class='line'>      &lt;th colspan="3"&gt;&lt;/th&gt;
+</span><span class='line'>    &lt;/tr&gt;
+</span><span class='line'>  &lt;/thead&gt;
+</span><span class='line'>略
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><img src="/images/sidekiq/sidekiq_test.png" alt="Alt text" /></p>
+<h2>測試</h2>
 
-<p>打完收工，之後當然是要把sidekiq 串接到Rails中，之後會再介紹</p>
+<p><a href="http://localhost:3000?locale=en">http://localhost:3000?locale=en</a></p>
+
+<p><img src="/images/i18n/locale_test_en.png" alt="Alt text" /></p>
+
+<p><a href="http://localhost:3000?locale=zh-TW">http://localhost:3000?locale=zh-TW</a></p>
+
+<p><img src="/images/i18n/locale_test_zh.png" alt="Alt text" /></p>
 
 <h2>參考資料</h2>
 
-<p><a href="https://www.youtube.com/watch?v=bfPb1zD91Rg&amp;list=PLjeHh2LSCFrWGT5uVjUuFKAcrcj5kSai1&amp;index=1">You Tube 介紹</a></p>
-
-<p><a href="https://github.com/mperham/sidekiq/wiki">sidekiq wiki</a></p>
+<p><a href="http://guides.rubyonrails.org/i18n.html">http://guides.rubyonrails.org/i18n.html</a>
+<a href="http://juanitofatas.com/2014/06/25/rails-i18n-intro/">http://juanitofatas.com/2014/06/25/rails-i18n-intro/</a>
+<a href="https://github.com/svenfuchs/rails-i18n">https://github.com/svenfuchs/rails-i18n</a></p>
 </div>
 
 
@@ -211,12 +234,12 @@ mkdir MyJob Step2 : &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-06-20T21:49:24+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>9:49 pm</span></time>
+<time class='entry-date' datetime='2016-06-23T23:49:43+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>11:49 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/sidekiq/'>sidekiq</a>
+    <a class='category' href='/blog/categories/gem/'>gem</a>
   
 </span>
 
@@ -225,7 +248,7 @@ mkdir MyJob Step2 : &hellip;">
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/20/sidekiq/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/20/sidekiq/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/23/rails-i18n/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/23/rails-i18n/" >Tweet</a>
   
   
   
@@ -234,10 +257,8 @@ mkdir MyJob Step2 : &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/06/19/roo-gem/" title="Previous Post: 使用 roo gem 來讀取 Excel 內容">&laquo; 使用 roo gem 來讀取 Excel 內容</a>
+        <a class="basic-alignment left" href="/blog/2016/06/23/webpack/" title="Previous Post:  webpack 介紹">&laquo;  webpack 介紹</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/06/21/ruby-block-proc/" title="Next Post: ruby 中的block 及 proc ">ruby 中的block 及 proc  &raquo;</a>
       
     </p>
   </footer>
