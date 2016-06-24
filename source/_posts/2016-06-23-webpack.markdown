@@ -16,7 +16,7 @@ It often replaces grunt or gulp because it can build and bundle CSS, preprocesse
 
 還沒有時間消化，先整理在以下圖表
 
-參數 | 說明 
+參數 | 說明
 :---|:----
 javascript | https://github.com/petehunt/webpack-howto#4-compile-to-js-languages
 stylesheets and image | https://github.com/petehunt/webpack-howto#5-stylesheets-and-images
@@ -24,7 +24,7 @@ multi entrypoints | https://github.com/petehunt/webpack-howto#7-multiple-entrypo
 Async loading | https://github.com/petehunt/webpack-howto#9-async-loading
 
 
-  
+
 ## 如何執行 webpack
 
  在下面的安裝做完之後，可以回來這邊測試一下
@@ -173,8 +173,11 @@ http://localhost:8888
 ## 參考資料
 
 - https://github.com/petehunt/webpack-howto
+
 - https://rhadow.github.io/2015/03/23/webpackIntro/
+
 - https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals
+
 - https://github.com/petehunt/webpack-howto/blob/master/README-zh.md
 
 
