@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-24T00:40:29+08:00</updated>
+  <updated>2016-06-25T00:11:45+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,145 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rails 多國語系－資料庫]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/24/rails-global/"/>
+    <updated>2016-06-24T23:46:43+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/24/rails-global</id>
+    <content type="html"><![CDATA[<h2>說明</h2>
+
+<p>在上一篇 <a href="http://jimmy0328.github.io/blog/2016/06/23/rails-i18n/">Rails 多國語系-rails_i18n</a> 是使用 rails-i18n 來達到多國語系，設定的方式大多都是使用yml 的設定檔來建立不同的語系，所以一旦你的平台是內容的多國語系，這個時侯就變成要時常在修改locale的yml檔，所以變的很沒有彈性。</p>
+
+<p>使用 globalize 就是為了把多國語系建立在資料庫中，所以可以直在修改data就可以維護多國語系了</p>
+
+<h2>安裝</h2>
+
+<h4>1. gem install globalize</h4>
+
+<p>globalize 這個gem 似乎問題不小，在rails 4.2.3 跑 官方的 master branch 是有問題的
+加上 Rails5 又有些不一樣了，改天再來在Rails5測試看看，總之以下方式是在 Rails5 是無法執行的</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'rails-i18n'
+</span><span class='line'>gem 'globalize', git: "git@github.com:globalize/globalize.git"</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2. bundle install</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3. 建立 translations</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g migration create_post_translation</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>4. 修改 migration 檔案</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class CreatePostTranslations &lt; ActiveRecord::Migration
+</span><span class='line'>  def self.up
+</span><span class='line'>    Post.create_translation_table!({
+</span><span class='line'>      :title =&gt; :string,
+</span><span class='line'>      :context =&gt; :text
+</span><span class='line'>    }, {
+</span><span class='line'>      :migrate_data =&gt; true
+</span><span class='line'>    })
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def self.down
+</span><span class='line'>    Post.drop_translation_table! :migrate_data =&gt; true
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>5. 修改 model</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Post &lt; ActiveRecord::Base
+</span><span class='line'>  translates :title, :context
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>6. 修改config/application.rb</h4>
+
+<p>加入</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>config.i18n.fallbacks = true
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>7. rake db:migrate</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:migrate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果到這邊是順利的，那應該就表示成功了，否則應該就是版本上有些問題，可能又要再google 一下了</p>
+
+<h2>測試</h2>
+
+<ol>
+<li><p>rails console</p></li>
+<li><p>測試建立資料</p></li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>I18n.locale = :en
+</span><span class='line'>
+</span><span class='line'>Post.create({ title: "test1", context: "test1"})
+</span><span class='line'>
+</span><span class='line'>I18n.locale = :"zh-TW"
+</span><span class='line'>
+</span><span class='line'>post = Post.last
+</span><span class='line'>post.title = "測試"
+</span><span class='line'>post.save
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成，此時在 locale = :en 的 title 是 <code>test1</code>, 而 locale = :&ldquo;zh-TW&rdquo; 的 title 是 <code>測試</code></p>
+
+<h2>參考資料</h2>
+
+<ul>
+<li><p><a href="https://github.com/ncri/globalize">https://github.com/ncri/globalize</a></p></li>
+<li><p><a href="http://railscasts.com/episodes/338-globalize3?autoplay=true">http://railscasts.com/episodes/338-globalize3?autoplay=true</a></p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails 多國語系- Rails_i18n]]></title>
@@ -407,10 +546,10 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
 <h2>參考資料</h2>
 
 <ul>
-<li><a href="https://github.com/petehunt/webpack-howto">https://github.com/petehunt/webpack-howto</a></li>
-<li><a href="https://rhadow.github.io/2015/03/23/webpackIntro/">https://rhadow.github.io/2015/03/23/webpackIntro/</a></li>
-<li><a href="https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals">https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals</a></li>
-<li><a href="https://github.com/petehunt/webpack-howto/blob/master/README-zh.md">https://github.com/petehunt/webpack-howto/blob/master/README-zh.md</a></li>
+<li><p><a href="https://github.com/petehunt/webpack-howto">https://github.com/petehunt/webpack-howto</a></p></li>
+<li><p><a href="https://rhadow.github.io/2015/03/23/webpackIntro/">https://rhadow.github.io/2015/03/23/webpackIntro/</a></p></li>
+<li><p><a href="https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals">https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals</a></p></li>
+<li><p><a href="https://github.com/petehunt/webpack-howto/blob/master/README-zh.md">https://github.com/petehunt/webpack-howto/blob/master/README-zh.md</a></p></li>
 </ul>
 
 ]]></content>

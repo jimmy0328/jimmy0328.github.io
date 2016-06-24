@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-24T00:40:29+08:00</updated>
+  <updated>2016-06-25T00:11:45+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -200,10 +200,10 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
 <h2>參考資料</h2>
 
 <ul>
-<li><a href="https://github.com/petehunt/webpack-howto">https://github.com/petehunt/webpack-howto</a></li>
-<li><a href="https://rhadow.github.io/2015/03/23/webpackIntro/">https://rhadow.github.io/2015/03/23/webpackIntro/</a></li>
-<li><a href="https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals">https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals</a></li>
-<li><a href="https://github.com/petehunt/webpack-howto/blob/master/README-zh.md">https://github.com/petehunt/webpack-howto/blob/master/README-zh.md</a></li>
+<li><p><a href="https://github.com/petehunt/webpack-howto">https://github.com/petehunt/webpack-howto</a></p></li>
+<li><p><a href="https://rhadow.github.io/2015/03/23/webpackIntro/">https://rhadow.github.io/2015/03/23/webpackIntro/</a></p></li>
+<li><p><a href="https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals">https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals</a></p></li>
+<li><p><a href="https://github.com/petehunt/webpack-howto/blob/master/README-zh.md">https://github.com/petehunt/webpack-howto/blob/master/README-zh.md</a></p></li>
 </ul>
 
 ]]></content>
