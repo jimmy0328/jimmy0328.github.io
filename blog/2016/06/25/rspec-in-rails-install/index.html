@@ -5,11 +5,21 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Settingslogic Gem 的使用 - 熊爸天下</title>
+  <title>Rspec in Rails 安裝篇 - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是 Settingslogic Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, &hellip;">
+  <meta name="description" content="說明 安裝 Gemfile 加入 rspec-rails 1
+2
+3
+4
+5
+group :development do
+(略)
+gem 'rspec-rails', '~&gt; 3.4'
+(略)
+end bundle install 1
+bundle install install rspec &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +28,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/25/rspec-in-rails-install/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -68,7 +78,7 @@
   
   <header>
     
-      <h1 class="entry-title">Settingslogic Gem 的使用</h1>
+      <h1 class="entry-title">Rspec in Rails 安裝篇</h1>
     
     
       <p class="meta">
@@ -77,32 +87,57 @@
 
 
 
-<time class='entry-date' datetime='2016-06-18T10:00:55+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+<time class='entry-date' datetime='2016-06-25T17:08:12+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:08 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>什麼是 Settingslogic</h2>
-
-<p>Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, maybe you will enjoy it too. Settingslogic works with Rails, Sinatra, or any Ruby project.</p>
-
-<p><a href="https://github.com/binarylogic/settingslogic">Git source</a></p>
+<div class="entry-content"><h2>說明</h2>
 
 <h2>安裝</h2>
 
-<p>Rails Gemfile中使用</p>
+<h4>Gemfile 加入 rspec-rails</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'settingslogic'</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>group :development do
+</span><span class='line'>(略)
+</span><span class='line'>gem 'rspec-rails', '~&gt; 3.4'
+</span><span class='line'>(略)
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
 
-<p>記得 bundle install</p>
+<h4>bundle install</h4>
 
-<h2>使用</h2>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
 
-<p>在Rails model中建立一支 models class, 例如 : Fee</p>
+
+<h4>install rspec</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails generate rspec:install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/rspec/install_rspec.png" width="400" alt="Alt text" /></p>
+
+<h4>add model rspec</h4>
+
+<p>app/models/post.rb</p>
+
+<p>post model add validates</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>validates :title, :context, presence: true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>spec/models/post_spec.rb</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -110,39 +145,41 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ass Fee &lt; Settingslogic
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
 </span><span class='line'>
-</span><span class='line'>  source "#{Rails.root}/config/fee.yml"
-</span><span class='line'>  namespace Rails.env
+</span><span class='line'>RSpec.describe Post, type: :model do
 </span><span class='line'>
-</span><span class='line'>end
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  it "valid attributes" do
+</span><span class='line'>    expect(Post.new).not_to be_valid
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  it "valid attributes" do
+</span><span class='line'>    post = Post.create!(title: 'test', context: 'test')
+</span><span class='line'>    expect(post).to be_valid
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
 
-<p>在 config 中 增新一支 fee.yml</p>
+<h4>測試</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>defaults: &default
-</span><span class='line'>  salary:
-</span><span class='line'>    sales: 0
-</span><span class='line'>    staff: 0
-</span><span class='line'>    staff_overtime: 0
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>spec spec/models/post_spec.rb</span></code></pre></td></tr></table></div></figure>
 
 
-<p>大功告成</p>
+<p><img src="/images/rspec/test_pass.png" width="400" alt="Alt text" /></p>
 
-<h2>測試</h2>
+<h4>參考資料</h4>
 
-<p>在 Rails console 中就可以直接類似 Rails model 的方式操作它了</p>
-
-<p>例如: <code>Fee.salary</code></p>
-
-<p><img src="/images/settingslogic/settingslogic_test.png" alt="Alt text" /></p>
+<p><a href="https://github.com/rspec/rspec-rails#model-specs">https://github.com/rspec/rspec-rails#model-specs</a></p>
 </div>
 
 
@@ -158,12 +195,12 @@
 
 
 
-<time class='entry-date' datetime='2016-06-18T10:00:55+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+<time class='entry-date' datetime='2016-06-25T17:08:12+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:08 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/gem/'>gem</a>
+    <a class='category' href='/blog/categories/gem/'>gem</a>, <a class='category' href='/blog/categories/test/'>test,</a>
   
 </span>
 
@@ -172,7 +209,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/25/rspec-in-rails-install/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/25/rspec-in-rails-install/" >Tweet</a>
   
   
   
@@ -181,10 +218,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/06/17/ruby-rspec/" title="Previous Post: Rspec 介紹">&laquo; Rspec 介紹</a>
+        <a class="basic-alignment left" href="/blog/2016/06/24/rails-global/" title="Previous Post: Rails 多國語系－資料庫">&laquo; Rails 多國語系－資料庫</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/06/18/scraper/" title="Next Post: 抓web網站小圖">抓web網站小圖 &raquo;</a>
       
     </p>
   </footer>

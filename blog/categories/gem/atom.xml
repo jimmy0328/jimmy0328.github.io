@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gem | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/gem/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-25T00:11:45+08:00</updated>
+  <updated>2016-06-25T18:19:47+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -14,15 +14,97 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Rspec in Rails 安裝篇]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/25/rspec-in-rails-install/"/>
+    <updated>2016-06-25T17:08:12+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/25/rspec-in-rails-install</id>
+    <content type="html"><![CDATA[<h2>說明</h2>
+
+<h2>安裝</h2>
+
+<h4>Gemfile 加入 rspec-rails</h4>
+
+<pre><code>group :development do
+(略)
+gem 'rspec-rails', '~&gt; 3.4'
+(略)
+end
+</code></pre>
+
+<h4>bundle install</h4>
+
+<pre><code>bundle install
+</code></pre>
+
+<h4>install rspec</h4>
+
+<pre><code>rails generate rspec:install
+</code></pre>
+
+<p><img src="/images/rspec/install_rspec.png" width="400" alt="Alt text" /></p>
+
+<h4>add model rspec</h4>
+
+<p>app/models/post.rb</p>
+
+<p>post model add validates</p>
+
+<pre><code>validates :title, :context, presence: true
+</code></pre>
+
+<p>spec/models/post_spec.rb
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require &lsquo;rails_helper&rsquo;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;RSpec.describe Post, type: :model do&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  it &ldquo;valid attributes&rdquo; do
+</span><span class='line'>    expect(Post.new).not_to be_valid
+</span><span class='line'>  end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  it &ldquo;valid attributes&rdquo; do
+</span><span class='line'>    post = Post.create!(title: &lsquo;test&rsquo;, context: &lsquo;test&rsquo;)
+</span><span class='line'>    expect(post).to be_valid
+</span><span class='line'>  end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;end</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>測試</h4>
+
+<pre><code>spec spec/models/post_spec.rb
+</code></pre>
+
+<p><img src="/images/rspec/test_pass.png" width="400" alt="Alt text" /></p>
+
+<h4>參考資料</h4>
+
+<p><a href="https://github.com/rspec/rspec-rails#model-specs">https://github.com/rspec/rspec-rails#model-specs</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Rails 多國語系－資料庫]]></title>
     <link href="http://jimmy0328.github.io/blog/2016/06/24/rails-global/"/>
     <updated>2016-06-24T23:46:43+08:00</updated>
     <id>http://jimmy0328.github.io/blog/2016/06/24/rails-global</id>
     <content type="html"><![CDATA[<h2>說明</h2>
 
-<p>在上一篇 <a href="http://jimmy0328.github.io/blog/2016/06/23/rails-i18n/">Rails 多國語系-rails_i18n</a> 是使用 rails-i18n 來達到多國語系，設定的方式大多都是使用yml 的設定檔來建立不同的語系，所以一旦你的平台是內容的多國語系，這個時侯就變成要時常在修改locale的yml檔，所以變的很沒有彈性。</p>
+<p>在上一篇 <a href="http://jimmy0328.github.io/blog/2016/06/23/rails-i18n/">Rails 多國語系-rails_i18n</a> 是使用 rails-i18n 來達到多國語系，設定的方式大多都是使用yml 的設定檔來建立不同的語系，所以一旦你的平台是內容的多國語系，這個時侯就變成要時常在修改locale的yml檔，相當沒有彈性。</p>
 
-<p>使用 globalize 就是為了把多國語系建立在資料庫中，所以可以直在修改data就可以維護多國語系了</p>
+<p>使用 globalize 可以把多國語系建立在資料庫中，所以可以直修改data就可以維護多國語系了</p>
 
 <h2>安裝</h2>
 
