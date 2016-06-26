@@ -1,0 +1,477 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller - 熊爸天下</title>
+  <meta name="author" content="Jimmy Lin">
+
+  
+  <meta name="description" content="說明 在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法 describe 及 context 這二個都是用來做分類使用的，例如 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+describe Post do context "when post is valid" do ... end &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/25/rspec-test-model-controller/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">熊爸天下</a></h1>
+  
+    <h2>技術筆記/生活點滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jimmy0328.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-25T20:09:23+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>8:09 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>說明</h2>
+
+<p>在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法</p>
+
+<ol>
+<li>describe 及 context</li>
+</ol>
+
+
+<p>這二個都是用來做分類使用的，例如</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>describe Post do
+</span><span class='line'>
+</span><span class='line'>  context "when post is valid" do
+</span><span class='line'>   ...
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  context "when post is invalid" do
+</span><span class='line'>   ...
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>使用 it 與 expect</li>
+</ol>
+
+
+<p>可以用這二個來做小片斷的測試</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>describe Post do
+</span><span class='line'>
+</span><span class='line'>  context "when post is valid" do
+</span><span class='line'>
+</span><span class='line'>    it "should post if user is broker" do
+</span><span class='line'>     ....
+</span><span class='line'>     post = Post.create(title: 'test', context: 'test description')
+</span><span class='line'>     略
+</span><span class='line'>     expect(post.title).to eq("test")
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>    it "should post if user is operator" do
+</span><span class='line'>     ...
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  context "when post is invalid" do
+</span><span class='line'>   ...
+</span><span class='line'>  end
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>安裝 shoulda-matcher</h2>
+
+<ol>
+<li>修改 Gemfile</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'rails-rspec'
+</span><span class='line'>gem 'shoulda-matchers', require: "shoulda/matchers"</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>bundle install</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://github.com/thoughtbot/shoulda-matchers">https://github.com/thoughtbot/shoulda-matchers</a></p>
+
+<ol>
+<li>rails_helper.rb 加入設定</li>
+</ol>
+
+
+<p>在最下面加入</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(略)
+</span><span class='line'>Shoulda::Matchers.configure do |config|
+</span><span class='line'>  config.integrate do |with|
+</span><span class='line'>    with.test_framework :rspec
+</span><span class='line'>    with.library :active_record
+</span><span class='line'>    with.library :active_model
+</span><span class='line'>    with.library :action_controller
+</span><span class='line'>    with.library :rails
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用 shoulda-matchers 來簡化測試</p>
+
+<h2>測試 model</h2>
+
+<p>首先修改一下model, shoulda-matcher 提供了方便的helper，常見的如下</p>
+
+<ul>
+<li>ActionModel matchers</li>
+<li>ActionRecord matchers</li>
+<li>ActionController matchers</li>
+</ul>
+
+
+<p>測試model 當然是用 ActionModel matchers 的helper 來使用，例如: 必填欄位就可以使用 <code>validate_presence_of</code></p>
+
+<p>spec/models/post_spec.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
+</span><span class='line'>
+</span><span class='line'>RSpec.describe Post, type: :model do
+</span><span class='line'>
+</span><span class='line'>  it { should validate_presence_of(:title) }
+</span><span class='line'>  it { should validate_presence_of(:context) }
+</span><span class='line'>  it { should belong_to(:user) }
+</span><span class='line'>
+</span><span class='line'>  it "valid attributes" do
+</span><span class='line'>    expect(Post.new).not_to be_valid
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  it "valid attributes" do
+</span><span class='line'>    post = Post.create!(title: 'test', context: 'test')
+</span><span class='line'>    expect(post).to be_valid
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>測試 controller</h2>
+
+<p>controller 可以寫到很細，這邊先用 index 及 create 做個簡單的sample</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
+</span><span class='line'>
+</span><span class='line'>RSpec.describe PostsController, type: :controller do
+</span><span class='line'>
+</span><span class='line'>  describe "GET #index" do
+</span><span class='line'>
+</span><span class='line'>    it "renders the index template" do
+</span><span class='line'>      get :index
+</span><span class='line'>      expect(response).to render_template("index")
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>    it "responds successfully with an HTTP 200 status code" do
+</span><span class='line'>      get :index
+</span><span class='line'>      expect(response).to be_success
+</span><span class='line'>      expect(response).to have_http_status(200)
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  describe "POST #create" do
+</span><span class='line'>
+</span><span class='line'>    it "can create" do
+</span><span class='line'>      expect{
+</span><span class='line'>       post :create, post: {title: 'test', context: 'test'} ,format: :json
+</span><span class='line'>      }.to change{
+</span><span class='line'>        Post.count
+</span><span class='line'>      }.by(1)
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>除了RSpec + shoulda_matcher 外，在測試上我們也會搭配factory_girl 及 faker 來做一些 fake data 的處理，之後有空來再補這個部份的介紹</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jimmy Lin</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-06-25T20:09:23+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>8:09 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/gem/'>gem</a>, <a class='category' href='/blog/categories/test/'>test,</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/25/rspec-test-model-controller/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/25/rspec-test-model-controller/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/25/rspec-in-rails-install/" title="Previous Post:  Rspec in Rails 安裝篇">&laquo;  Rspec in Rails 安裝篇</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/25/rspec-in-rails-install/">Rspec in Rails 安裝篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/24/rails-global/">Rails 多國語系－資料庫</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/23/rails-i18n/">Rails 多國語系- Rails_i18n</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/23/webpack/">Webpack 介紹</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jimmy Lin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

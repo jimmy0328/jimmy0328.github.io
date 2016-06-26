@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gem | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/gem/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-25T18:19:47+08:00</updated>
+  <updated>2016-06-27T00:11:10+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,177 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/25/rspec-test-model-controller/"/>
+    <updated>2016-06-25T20:09:23+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/25/rspec-test-model-controller</id>
+    <content type="html"><![CDATA[<h2>說明</h2>
+
+<p>在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法</p>
+
+<ol>
+<li>describe 及 context</li>
+</ol>
+
+
+<p>這二個都是用來做分類使用的，例如</p>
+
+<pre><code>describe Post do
+
+  context "when post is valid" do
+   ...
+  end
+
+  context "when post is invalid" do
+   ...
+  end
+end
+</code></pre>
+
+<ol>
+<li>使用 it 與 expect</li>
+</ol>
+
+
+<p>可以用這二個來做小片斷的測試</p>
+
+<pre><code>describe Post do
+
+  context "when post is valid" do
+
+    it "should post if user is broker" do
+     ....
+     post = Post.create(title: 'test', context: 'test description')
+     略
+     expect(post.title).to eq("test")
+    end
+
+    it "should post if user is operator" do
+     ...
+    end
+
+  end
+
+  context "when post is invalid" do
+   ...
+  end
+end
+</code></pre>
+
+<h2>安裝 shoulda-matcher</h2>
+
+<ol>
+<li><p>修改 Gemfile
+<code>
+gem 'rails-rspec'
+gem 'shoulda-matchers', require: "shoulda/matchers"
+</code></p></li>
+<li><p>bundle install</p></li>
+</ol>
+
+
+<pre><code>bundle install
+</code></pre>
+
+<p><a href="https://github.com/thoughtbot/shoulda-matchers">https://github.com/thoughtbot/shoulda-matchers</a></p>
+
+<ol>
+<li>rails_helper.rb 加入設定</li>
+</ol>
+
+
+<p>在最下面加入
+<code>
+(略)
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :active_record
+    with.library :active_model
+    with.library :action_controller
+    with.library :rails
+  end
+end
+</code>
+使用 shoulda-matchers 來簡化測試</p>
+
+<h2>測試 model</h2>
+
+<p>首先修改一下model, shoulda-matcher 提供了方便的helper，常見的如下</p>
+
+<ul>
+<li>ActionModel matchers</li>
+<li>ActionRecord matchers</li>
+<li>ActionController matchers</li>
+</ul>
+
+
+<p>測試model 當然是用 ActionModel matchers 的helper 來使用，例如: 必填欄位就可以使用 <code>validate_presence_of</code></p>
+
+<p>spec/models/post_spec.rb</p>
+
+<pre><code>require 'rails_helper'
+
+RSpec.describe Post, type: :model do
+
+  it { should validate_presence_of(:title) }
+  it { should validate_presence_of(:context) }
+  it { should belong_to(:user) }
+
+  it "valid attributes" do
+    expect(Post.new).not_to be_valid
+  end
+
+  it "valid attributes" do
+    post = Post.create!(title: 'test', context: 'test')
+    expect(post).to be_valid
+  end
+
+end
+</code></pre>
+
+<h2>測試 controller</h2>
+
+<p>controller 可以寫到很細，這邊先用 index 及 create 做個簡單的sample</p>
+
+<pre><code>require 'rails_helper'
+
+RSpec.describe PostsController, type: :controller do
+
+  describe "GET #index" do
+
+    it "renders the index template" do
+      get :index
+      expect(response).to render_template("index")
+    end
+
+    it "responds successfully with an HTTP 200 status code" do
+      get :index
+      expect(response).to be_success
+      expect(response).to have_http_status(200)
+    end
+
+  end
+
+  describe "POST #create" do
+
+    it "can create" do
+      expect{
+       post :create, post: {title: 'test', context: 'test'} ,format: :json
+      }.to change{
+        Post.count
+      }.by(1)
+    end
+  end
+
+end
+</code></pre>
+
+<p>除了RSpec + shoulda_matcher 外，在測試上我們也會搭配factory_girl 及 faker 來做一些 fake data 的處理，之後有空來再補這個部份的介紹</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rspec in Rails 安裝篇]]></title>
@@ -279,287 +450,103 @@ zh-TW:
 <h2>使用方式</h2>
 
 <p>在 erb 中使用 t(&ldquo;yml的設定方式&rdquo;)
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>略
-</span><span class='line'>  &lt;thead&gt;
-</span><span class='line'>    &lt;tr&gt;
-</span><span class='line'>      &lt;th&gt;&lt;%= t(&ldquo;post.title&rdquo;) %&gt;&lt;/th&gt;
-</span><span class='line'>      &lt;th&gt;&lt;%= t(&ldquo;post.context&rdquo;) %&gt;&lt;/th&gt;
-</span><span class='line'>      &lt;th colspan="3"&gt;&lt;/th&gt;
-</span><span class='line'>    &lt;/tr&gt;
-</span><span class='line'>  &lt;/thead&gt;
-</span><span class='line'>略&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;```&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;測試&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;a href="http://localhost:3000?locale=en"&gt;http://localhost:3000?locale=en&lt;/a&gt;&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;img src="/images/i18n/locale_test_en.png" alt="Alt text" /&gt;&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;a href="http://localhost:3000?locale=zh-TW"&gt;http://localhost:3000?locale=zh-TW&lt;/a&gt;&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;img src="/images/i18n/locale_test_zh.png" alt="Alt text" /&gt;&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;參考資料&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;a href="http://guides.rubyonrails.org/i18n.html"&gt;http://guides.rubyonrails.org/i18n.html&lt;/a&gt;
-</span><span class='line'>&lt;a href="http://juanitofatas.com/2014/06/25/rails-i18n-intro/"&gt;http://juanitofatas.com/2014/06/25/rails-i18n-intro/&lt;/a&gt;
-</span><span class='line'>&lt;a href="https://github.com/svenfuchs/rails-i18n"&gt;https://github.com/svenfuchs/rails-i18n&lt;/a&gt;&lt;/p&gt;
-</span><span class='line'>]]&gt;&lt;/content&gt;
-</span><span class='line'>  &lt;/entry&gt;
-</span><span class='line'>  
-</span><span class='line'>  &lt;entry&gt;
-</span><span class='line'>    &lt;title type="html"&gt;&lt;![CDATA[使用 Roo Gem 來讀取 Excel 內容]]&gt;&lt;/title&gt;
-</span><span class='line'>    &lt;link href="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/"/&gt;
-</span><span class='line'>    &lt;updated&gt;2016-06-19T22:24:45+08:00&lt;/updated&gt;
-</span><span class='line'>    &lt;id&gt;http://jimmy0328.github.io/blog/2016/06/19/roo-gem&lt;/id&gt;
-</span><span class='line'>    &lt;content type="html"&gt;&lt;![CDATA[&lt;h2&gt;什麼是 roo&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
-</span><span class='line'>這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;如何使用&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;pre&gt;&lt;code class="`"&gt;  gem install roo
-</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt; 另外如果有編碼的問題，請也一併用 iconv 來處理&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;範例&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;簡單的說明一下，假設我有一份 xlsx 的檔案，如下圖&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;img src="/images/roo/xlsx_file.png" alt="Alt text" /&gt;&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;接下來使用 roo 來簡單的讀取資料
-</span><span class='line'>這邊我寫一支簡單的ruby 來測試一下，所以當我執行 &lt;code&gt;Excel.import("../hotels.xlsx")&lt;/code&gt; 就可以把我要的xlsx試著print出來&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;pre&gt;&lt;code&gt;require 'roo'
-</span><span class='line'>require 'iconv'
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>class Hotel
-</span><span class='line'>  def initialize(name, address, coordinates)
-</span><span class='line'>    @name = name
-</span><span class='line'>    @address = address
-</span><span class='line'>    @coordinates = coordinates
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  def print
-</span><span class='line'>    "#{@name} | #{@address} | #{@coordinates}"
-</span><span class='line'>  end
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>class Excel
-</span><span class='line'>
-</span><span class='line'>  def self.import(file_path)
-</span><span class='line'>    xlsx = Roo::Spreadsheet.open(file_path)
-</span><span class='line'>    xlsx.first_row.upto(xlsx.last_row) do |row|
-</span><span class='line'>      name = xlsx.cell(row,'A')
-</span><span class='line'>      address = xlsx.cell(row,'B')
-</span><span class='line'>      coordinates = xlsx.cell(row,'C')
-</span><span class='line'>      puts Hotel.new(name, address, coordinates).print
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>Excel.import("../hotels.xlsx")
-</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;大功告成，下一篇再來實作一個檔案上傳可以import的功能&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;參考資料&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;a href="http://roo.rubyforge.org/"&gt;http://roo.rubyforge.org/&lt;/a&gt;
-</span><span class='line'>[&lt;a href="https://github.com/roo-rb/roo"&gt;https://github.com/roo-rb/roo&lt;/a&gt;] (&lt;a href="https://github.com/roo-rb/roo"&gt;https://github.com/roo-rb/roo&lt;/a&gt;)
-</span><span class='line'>&lt;a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true"&gt;Railscasts&lt;/a&gt;&lt;/p&gt;
-</span><span class='line'>]]&gt;&lt;/content&gt;
-</span><span class='line'>  &lt;/entry&gt;
-</span><span class='line'>  
-</span><span class='line'>  &lt;entry&gt;
-</span><span class='line'>    &lt;title type="html"&gt;&lt;![CDATA[Settingslogic Gem 的使用]]&gt;&lt;/title&gt;
-</span><span class='line'>    &lt;link href="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/"/&gt;
-</span><span class='line'>    &lt;updated&gt;2016-06-18T10:00:55+08:00&lt;/updated&gt;
-</span><span class='line'>    &lt;id&gt;http://jimmy0328.github.io/blog/2016/06/18/settingslogic&lt;/id&gt;
-</span><span class='line'>    &lt;content type="html"&gt;&lt;![CDATA[&lt;h2&gt;什麼是 Settingslogic&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, maybe you will enjoy it too. Settingslogic works with Rails, Sinatra, or any Ruby project.&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;&lt;a href="https://github.com/binarylogic/settingslogic"&gt;Git source&lt;/a&gt;&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;安裝&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;Rails Gemfile中使用&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;pre&gt;&lt;code&gt;gem 'settingslogic'
-</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;記得 bundle install&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;h2&gt;使用&lt;/h2&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;在Rails model中建立一支 models class, 例如 : Fee&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;pre&gt;&lt;code&gt;ass Fee &lt; Settingslogic
-</span><span class='line'>
-</span><span class='line'>  source "#{Rails.root}/config/fee.yml"
-</span><span class='line'>  namespace Rails.env
-</span><span class='line'>
-</span><span class='line'>end
-</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;在 config 中 增新一支 fee.yml</span></code></pre></td></tr></table></div></figure>
-defaults: &amp;default
-  salary:
-    sales: 0
-    staff: 0
-    staff_overtime: 0</p>
+```
+略
+  <thead>
+    <tr>
+      <th>&lt;%= t(&ldquo;post.title&rdquo;) %></th>
+      <th>&lt;%= t(&ldquo;post.context&rdquo;) %></th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+略</p>
 
 <p>```</p>
 
-<p>大功告成</p>
-
 <h2>測試</h2>
 
-<p>在 Rails console 中就可以直接類似 Rails model 的方式操作它了</p>
+<p><a href="http://localhost:3000?locale=en">http://localhost:3000?locale=en</a></p>
 
-<p>例如: <code>Fee.salary</code></p>
+<p><img src="/images/i18n/locale_test_en.png" alt="Alt text" /></p>
 
-<p><img src="/images/settingslogic/settingslogic_test.png" alt="Alt text" /></p>
+<p><a href="http://localhost:3000?locale=zh-TW">http://localhost:3000?locale=zh-TW</a></p>
+
+<p><img src="/images/i18n/locale_test_zh.png" alt="Alt text" /></p>
+
+<h2>參考資料</h2>
+
+<p><a href="http://guides.rubyonrails.org/i18n.html">http://guides.rubyonrails.org/i18n.html</a>
+<a href="http://juanitofatas.com/2014/06/25/rails-i18n-intro/">http://juanitofatas.com/2014/06/25/rails-i18n-intro/</a>
+<a href="https://github.com/svenfuchs/rails-i18n">https://github.com/svenfuchs/rails-i18n</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[使用 Roo Gem 來讀取 Excel 內容]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/"/>
+    <updated>2016-06-19T22:24:45+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/19/roo-gem</id>
+    <content type="html"><![CDATA[<h2>什麼是 roo</h2>
+
+<p>用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
+這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能</p>
+
+<h2>如何使用</h2>
+
+<pre><code class="`">  gem install roo
+</code></pre>
+
+<p> 另外如果有編碼的問題，請也一併用 iconv 來處理</p>
+
+<h2>範例</h2>
+
+<p>簡單的說明一下，假設我有一份 xlsx 的檔案，如下圖</p>
+
+<p><img src="/images/roo/xlsx_file.png" alt="Alt text" /></p>
+
+<p>接下來使用 roo 來簡單的讀取資料
+這邊我寫一支簡單的ruby 來測試一下，所以當我執行 <code>Excel.import("../hotels.xlsx")</code> 就可以把我要的xlsx試著print出來</p>
+
+<pre><code>require 'roo'
+require 'iconv'
+
+
+class Hotel
+  def initialize(name, address, coordinates)
+    @name = name
+    @address = address
+    @coordinates = coordinates
+  end
+
+  def print
+    "#{@name} | #{@address} | #{@coordinates}"
+  end
+end
+
+class Excel
+
+  def self.import(file_path)
+    xlsx = Roo::Spreadsheet.open(file_path)
+    xlsx.first_row.upto(xlsx.last_row) do |row|
+      name = xlsx.cell(row,'A')
+      address = xlsx.cell(row,'B')
+      coordinates = xlsx.cell(row,'C')
+      puts Hotel.new(name, address, coordinates).print
+    end
+  end
+
+end
+
+Excel.import("../hotels.xlsx")
+</code></pre>
+
+<p>大功告成，下一篇再來實作一個檔案上傳可以import的功能</p>
+
+<h2>參考資料</h2>
+
+<p><a href="http://roo.rubyforge.org/">http://roo.rubyforge.org/</a>
+[<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>] (<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>)
+<a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true">Railscasts</a></p>
 ]]></content>
   </entry>
   

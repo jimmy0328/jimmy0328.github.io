@@ -9,9 +9,7 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是Rspec Rspec 官網 Behaviour Driven
-Development for Ruby.
-Making TDD Productive and Fun. 簡開單的說它就是一種測試工具，在系統開發過中，很多人會使用TDD的開方方法來做開發， &hellip;">
+  <meta name="description" content="什麼是 Settingslogic Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +65,93 @@ Making TDD Productive and Fun. 簡開單的說它就是一種測試工具，在�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/18/settingslogic/">Settingslogic Gem 的使用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-18T10:00:55+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>什麼是 Settingslogic</h2>
+
+<p>Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, maybe you will enjoy it too. Settingslogic works with Rails, Sinatra, or any Ruby project.</p>
+
+<p><a href="https://github.com/binarylogic/settingslogic">Git source</a></p>
+
+<h2>安裝</h2>
+
+<p>Rails Gemfile中使用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'settingslogic'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>記得 bundle install</p>
+
+<h2>使用</h2>
+
+<p>在Rails model中建立一支 models class, 例如 : Fee</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ass Fee &lt; Settingslogic
+</span><span class='line'>
+</span><span class='line'>  source "#{Rails.root}/config/fee.yml"
+</span><span class='line'>  namespace Rails.env
+</span><span class='line'>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在 config 中 增新一支 fee.yml</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>defaults: &default
+</span><span class='line'>  salary:
+</span><span class='line'>    sales: 0
+</span><span class='line'>    staff: 0
+</span><span class='line'>    staff_overtime: 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成</p>
+
+<h2>測試</h2>
+
+<p>在 Rails console 中就可以直接類似 Rails model 的方式操作它了</p>
+
+<p>例如: <code>Fee.salary</code></p>
+
+<p><img src="/images/settingslogic/settingslogic_test.png" alt="Alt text" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -885,6 +970,10 @@ Making TDD Productive and Fun.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/06/25/rspec-in-rails-install/">Rspec in Rails 安裝篇</a>
       </li>
     
@@ -898,10 +987,6 @@ Making TDD Productive and Fun.</p>
     
       <li class="post">
         <a href="/blog/2016/06/23/webpack/">Webpack 介紹</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/21/rails5-job-with-sidekiq/">Rails5 Job With Sidekiq</a>
       </li>
     
   </ul>
