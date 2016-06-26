@@ -9,7 +9,7 @@ categories: test, gem
 ## 說明
 在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法
 
-1. describe 及 context
+#### 1. describe 及 context
 
 這二個都是用來做分類使用的，例如
 
@@ -28,7 +28,7 @@ end
 ```
 
 
-2. 使用 it 與 expect
+#### 2. 使用 it 與 expect
 
 可以用這二個來做小片斷的測試
 
@@ -59,13 +59,13 @@ end
 
 ## 安裝 shoulda-matcher
 
-1. 修改 Gemfile
+#### 1. 修改 Gemfile
 ```
 gem 'rails-rspec'
 gem 'shoulda-matchers', require: "shoulda/matchers"
 ```
 
-2. bundle install
+#### 2. bundle install
 
 ```
 bundle install
@@ -73,7 +73,7 @@ bundle install
 
 https://github.com/thoughtbot/shoulda-matchers
 
-3. rails_helper.rb 加入設定
+#### 3. rails_helper.rb 加入設定
 
 在最下面加入
 ```
