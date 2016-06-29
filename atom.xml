@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-27T00:11:10+08:00</updated>
+  <updated>2016-06-29T23:40:54+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,81 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Use Mixpanel]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/29/mixpanel/"/>
+    <updated>2016-06-29T23:11:50+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/29/mixpanel</id>
+    <content type="html"><![CDATA[<h2>什麼是Mixpanel</h2>
+
+<p>現在的網站越來越多平台為了監控使用者行為分析，所以大多數人平台都會導入 GA (Google Analytics)，除了很方便整合外，這個服務也是免費的。
+除了GA 外，Mixpanel 這個服務也是一個很強的資料分析平台服務，至於 mixpanel 的功能，這邊不多做介紹 ，快去申請一個來用就對了</p>
+
+<p><a href="https://mixpanel.com">https://mixpanel.com</a></p>
+
+<h2>使用mixpanel gem</h2>
+
+<h4>- Gemfile 中加入</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'mixpanel-ruby'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bundle install</p>
+
+<h4>- 設定mixpanel token</h4>
+
+<p>application.rb
+在application config 裡 init mixpanel</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>config.after_initialize do
+</span><span class='line'>  config.mixpanel = Mixpanel::Tracker.new(secrets.mixpanel[:token])
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我這邊是把 mixpanel 的token 放在 secret.yml，所以寫法上可以用 <code>secrets.mixpanel[:token]</code> 拿到token</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>development:
+</span><span class='line'>  secret_key_base:
+</span><span class='line'>  mixpanel:
+</span><span class='line'>    :token: 0000000000000000000000000</span></code></pre></td></tr></table></div></figure>
+
+
+<p>mixpanel 的token在下圖可以找到</p>
+
+<p><img src="http://jimmy0328.github.io/images/mixpanel/mixpanel.png" width="800" alt="Alt text" /></p>
+
+<h2>簡單的在 Rails中實現 Mixpanel Gem</h2>
+
+<p>在application_controller.rb 中加上</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>delegate :mixpanel, to: :"Rails.configuration"
+</span><span class='line'>before_action do
+</span><span class='line'>  mixpanel.track("User", "Test", {event: 'test', description: 'test context'})
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成，這樣只要有request 進到controller 的就都會送Event 給 mixpanel 了
+<img src="http://jimmy0328.github.io/images/mixpanel/mixpanel_event.png" width="800" alt="Alt text" /></p>
+
+<p>之後會再補上如何有效的加上Event 事件送給 mixpanel</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller]]></title>
@@ -22,10 +97,7 @@
 
 <p>在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法</p>
 
-<ol>
-<li>describe 及 context</li>
-</ol>
-
+<h4>1. describe 及 context</h4>
 
 <p>這二個都是用來做分類使用的，例如</p>
 
@@ -52,10 +124,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>使用 it 與 expect</li>
-</ol>
-
+<h4>2. 使用 it 與 expect</h4>
 
 <p>可以用這二個來做小片斷的測試</p>
 
@@ -106,10 +175,7 @@
 
 <h2>安裝 shoulda-matcher</h2>
 
-<ol>
-<li>修改 Gemfile</li>
-</ol>
-
+<h4>1. 修改 Gemfile</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -117,10 +183,7 @@
 </span><span class='line'>gem 'shoulda-matchers', require: "shoulda/matchers"</span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>bundle install</li>
-</ol>
-
+<h4>2. bundle install</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
@@ -128,10 +191,7 @@
 
 <p><a href="https://github.com/thoughtbot/shoulda-matchers">https://github.com/thoughtbot/shoulda-matchers</a></p>
 
-<ol>
-<li>rails_helper.rb 加入設定</li>
-</ol>
-
+<h4>3. rails_helper.rb 加入設定</h4>
 
 <p>在最下面加入</p>
 

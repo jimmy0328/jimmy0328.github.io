@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Settingslogic Gem 的使用 - 熊爸天下</title>
+  <title>Rails Use Mixpanel - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是 Settingslogic Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, &hellip;">
+  <meta name="description" content="什麼是Mixpanel 現在的網站越來越多平台為了監控使用者行為分析，所以大多數人平台都會導入 GA (Google Analytics)，除了很方便整合外，這個服務也是免費的。
+除了GA 外，Mixpanel 這個服務也是一個很強的資料分析平台服務，至於 mixpanel 的功能，這邊不多做介紹 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/06/29/mixpanel/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -68,7 +69,7 @@
   
   <header>
     
-      <h1 class="entry-title">Settingslogic Gem 的使用</h1>
+      <h1 class="entry-title">Rails Use Mixpanel</h1>
     
     
       <p class="meta">
@@ -77,72 +78,80 @@
 
 
 
-<time class='entry-date' datetime='2016-06-18T10:00:55+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+<time class='entry-date' datetime='2016-06-29T23:11:50+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:11 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>什麼是 Settingslogic</h2>
+<div class="entry-content"><h2>什麼是Mixpanel</h2>
 
-<p>Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, maybe you will enjoy it too. Settingslogic works with Rails, Sinatra, or any Ruby project.</p>
+<p>現在的網站越來越多平台為了監控使用者行為分析，所以大多數人平台都會導入 GA (Google Analytics)，除了很方便整合外，這個服務也是免費的。
+除了GA 外，Mixpanel 這個服務也是一個很強的資料分析平台服務，至於 mixpanel 的功能，這邊不多做介紹 ，快去申請一個來用就對了</p>
 
-<p><a href="https://github.com/binarylogic/settingslogic">Git source</a></p>
+<p><a href="https://mixpanel.com">https://mixpanel.com</a></p>
 
-<h2>安裝</h2>
+<h2>使用mixpanel gem</h2>
 
-<p>Rails Gemfile中使用</p>
+<h4>- Gemfile 中加入</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'settingslogic'</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'mixpanel-ruby'</span></code></pre></td></tr></table></div></figure>
 
 
-<p>記得 bundle install</p>
+<p>bundle install</p>
 
-<h2>使用</h2>
+<h4>- 設定mixpanel token</h4>
 
-<p>在Rails model中建立一支 models class, 例如 : Fee</p>
+<p>application.rb
+在application config 裡 init mixpanel</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>config.after_initialize do
+</span><span class='line'>  config.mixpanel = Mixpanel::Tracker.new(secrets.mixpanel[:token])
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我這邊是把 mixpanel 的token 放在 secret.yml，所以寫法上可以用 <code>secrets.mixpanel[:token]</code> 拿到token</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ass Fee &lt; Settingslogic
-</span><span class='line'>
-</span><span class='line'>  source "#{Rails.root}/config/fee.yml"
-</span><span class='line'>  namespace Rails.env
-</span><span class='line'>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>development:
+</span><span class='line'>  secret_key_base:
+</span><span class='line'>  mixpanel:
+</span><span class='line'>    :token: 0000000000000000000000000</span></code></pre></td></tr></table></div></figure>
+
+
+<p>mixpanel 的token在下圖可以找到</p>
+
+<p><img src="/images/mixpanel/mixpanel.png" width="800" alt="Alt text" /></p>
+
+<h2>簡單的在 Rails中實現 Mixpanel Gem</h2>
+
+<p>在application_controller.rb 中加上</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>delegate :mixpanel, to: :"Rails.configuration"
+</span><span class='line'>before_action do
+</span><span class='line'>  mixpanel.track("User", "Test", {event: 'test', description: 'test context'})
 </span><span class='line'>end
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>在 config 中 增新一支 fee.yml</p>
+<p>大功告成，這樣只要有request 進到controller 的就都會送Event 給 mixpanel 了
+<img src="/images/mixpanel/mixpanel_event.png" width="800" alt="Alt text" /></p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>defaults: &default
-</span><span class='line'>  salary:
-</span><span class='line'>    sales: 0
-</span><span class='line'>    staff: 0
-</span><span class='line'>    staff_overtime: 0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成</p>
-
-<h2>測試</h2>
-
-<p>在 Rails console 中就可以直接類似 Rails model 的方式操作它了</p>
-
-<p>例如: <code>Fee.salary</code></p>
-
-<p><img src="/images/settingslogic/settingslogic_test.png" alt="Alt text" /></p>
+<p>之後會再補上如何有效的加上Event 事件送給 mixpanel</p>
 </div>
 
 
@@ -158,12 +167,12 @@
 
 
 
-<time class='entry-date' datetime='2016-06-18T10:00:55+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:00 am</span></time>
+<time class='entry-date' datetime='2016-06-29T23:11:50+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:11 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/gem/'>gem</a>
+    <a class='category' href='/blog/categories/gem/'>gem,</a>, <a class='category' href='/blog/categories/monitor/'>monitor</a>
   
 </span>
 
@@ -172,7 +181,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/06/29/mixpanel/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/06/29/mixpanel/" >Tweet</a>
   
   
   
@@ -181,10 +190,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/06/17/ruby-rspec/" title="Previous Post: Rspec 介紹">&laquo; Rspec 介紹</a>
+        <a class="basic-alignment left" href="/blog/2016/06/25/rspec-test-model-controller/" title="Previous Post: 使用 Rspec 搭配 shoulda-matchers 測試 model 及 controller">&laquo; 使用 Rspec 搭配 shoulda-matchers 測試 model 及 controller</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/06/18/scraper/" title="Next Post: 抓web網站小圖">抓web網站小圖 &raquo;</a>
       
     </p>
   </footer>

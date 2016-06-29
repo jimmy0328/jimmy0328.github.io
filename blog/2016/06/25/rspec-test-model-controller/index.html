@@ -9,7 +9,7 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="說明 在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法 describe 及 context 這二個都是用來做分類使用的，例如 1
+  <meta name="description" content="說明 在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法 1. describe 及 context 這二個都是用來做分類使用的，例如 1
 2
 3
 4
@@ -98,10 +98,7 @@ describe Post do context "when post is valid" do ... end &hellip;">
 
 <p>在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法</p>
 
-<ol>
-<li>describe 及 context</li>
-</ol>
-
+<h4>1. describe 及 context</h4>
 
 <p>這二個都是用來做分類使用的，例如</p>
 
@@ -128,10 +125,7 @@ describe Post do context "when post is valid" do ... end &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>使用 it 與 expect</li>
-</ol>
-
+<h4>2. 使用 it 與 expect</h4>
 
 <p>可以用這二個來做小片斷的測試</p>
 
@@ -182,10 +176,7 @@ describe Post do context "when post is valid" do ... end &hellip;">
 
 <h2>安裝 shoulda-matcher</h2>
 
-<ol>
-<li>修改 Gemfile</li>
-</ol>
-
+<h4>1. 修改 Gemfile</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -193,10 +184,7 @@ describe Post do context "when post is valid" do ... end &hellip;">
 </span><span class='line'>gem 'shoulda-matchers', require: "shoulda/matchers"</span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>bundle install</li>
-</ol>
-
+<h4>2. bundle install</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
@@ -204,10 +192,7 @@ describe Post do context "when post is valid" do ... end &hellip;">
 
 <p><a href="https://github.com/thoughtbot/shoulda-matchers">https://github.com/thoughtbot/shoulda-matchers</a></p>
 
-<ol>
-<li>rails_helper.rb 加入設定</li>
-</ol>
-
+<h4>3. rails_helper.rb 加入設定</h4>
 
 <p>在最下面加入</p>
 
@@ -400,6 +385,8 @@ describe Post do context "when post is valid" do ... end &hellip;">
         <a class="basic-alignment left" href="/blog/2016/06/25/rspec-in-rails-install/" title="Previous Post:  Rspec in Rails 安裝篇">&laquo;  Rspec in Rails 安裝篇</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/06/29/mixpanel/" title="Next Post: Rails use mixpanel ">Rails use mixpanel  &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -411,6 +398,10 @@ describe Post do context "when post is valid" do ... end &hellip;">
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
@@ -426,10 +417,6 @@ describe Post do context "when post is valid" do ... end &hellip;">
     
       <li class="post">
         <a href="/blog/2016/06/23/rails-i18n/">Rails 多國語系- Rails_i18n</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/23/webpack/">Webpack 介紹</a>
       </li>
     
   </ul>

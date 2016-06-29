@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Test, | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/test/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-27T00:11:10+08:00</updated>
+  <updated>2016-06-29T23:40:54+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -22,10 +22,7 @@
 
 <p>在上一章有介紹怎麼安裝, 在這章會介紹幾個重要的觀念及用法</p>
 
-<ol>
-<li>describe 及 context</li>
-</ol>
-
+<h4>1. describe 及 context</h4>
 
 <p>這二個都是用來做分類使用的，例如</p>
 
@@ -41,10 +38,7 @@
 end
 </code></pre>
 
-<ol>
-<li>使用 it 與 expect</li>
-</ol>
-
+<h4>2. 使用 it 與 expect</h4>
 
 <p>可以用這二個來做小片斷的測試</p>
 
@@ -73,25 +67,20 @@ end
 
 <h2>安裝 shoulda-matcher</h2>
 
-<ol>
-<li><p>修改 Gemfile
-<code>
-gem 'rails-rspec'
-gem 'shoulda-matchers', require: "shoulda/matchers"
-</code></p></li>
-<li><p>bundle install</p></li>
-</ol>
+<h4>1. 修改 Gemfile</h4>
 
+<pre><code>gem 'rails-rspec'
+gem 'shoulda-matchers', require: "shoulda/matchers"
+</code></pre>
+
+<h4>2. bundle install</h4>
 
 <pre><code>bundle install
 </code></pre>
 
 <p><a href="https://github.com/thoughtbot/shoulda-matchers">https://github.com/thoughtbot/shoulda-matchers</a></p>
 
-<ol>
-<li>rails_helper.rb 加入設定</li>
-</ol>
-
+<h4>3. rails_helper.rb 加入設定</h4>
 
 <p>在最下面加入
 <code>
