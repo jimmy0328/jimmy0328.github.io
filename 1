@@ -1,0 +1,44 @@
+---
+layout: post
+title: "Rails use mixpanel "
+date: 2016-06-29 23:11:50 +0800
+comments: true
+categories: gem, monitor
+---
+
+## 什麼是Mixpanel
+
+現在的網站越來越多平台為了監控使用者行為分析，所以大多數人平台都會導入 GA (Google Analytics)，除了很方便整合外，這個服務也是免費的。
+除了GA 外，Mixpanel 這個服務也是一個很強的資料分析平台服務，至於 mixpanel 的功能，這邊不多做介紹 ，快去申請一個來用就對了
+
+https://mixpanel.com
+
+## 使用mixpanel gem
+
+#### - Gemfile 中加入
+```
+gem 'mixpanel-ruby'
+```
+bundle install
+
+#### - 設定mixpanel token
+
+application.rb
+在application config 裡 init mixpanel
+```
+config.after_initialize do
+  config.mixpanel = Mixpanel::Tracker.new(secrets.mixpanel[:token])
+end
+```
+
+我這邊是把 mixpanel 的token 放在 secret.yml，所以寫法上可以用 `secrets.mixpanel[:token]` 拿到token
+```
+略
+development:
+  secret_key_base:
+  mixpanel:
+    :token: 0000000000000000000000000
+```
+
+
+## 簡單的在 Rails中實現 Mixpanel Gem
