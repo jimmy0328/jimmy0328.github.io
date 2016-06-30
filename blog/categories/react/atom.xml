@@ -4,7 +4,7 @@
   <title><![CDATA[Category: React | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/react/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-29T23:40:54+08:00</updated>
+  <updated>2016-07-01T00:27:47+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在Rails中安裝React]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/30/react-in-rails/"/>
+    <updated>2016-06-30T23:55:11+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/30/react-in-rails</id>
+    <content type="html"><![CDATA[<h2>安裝 react gem</h2>
+
+<p>Gemfile 中加入
+使用 sprockets-es6 來寫ES6
+<code>
+gem 'react-rails'
+gem 'sprockets-es6', require: "sprockets/es6"
+</code>
+bundle install</p>
+
+<h2>安裝 react 檔案</h2>
+
+<p>會建立相關的檔案</p>
+
+<p>執行 <code>rails g react:install</code>
+<code>
+rails g react:install
+</code></p>
+
+<p>會建立相關的檔案
+<code>
+Running via Spring preloader in process 15876
+create  app/assets/javascripts/components
+create  app/assets/javascripts/components/.gitkeep
+insert  app/assets/javascripts/application.js
+insert  app/assets/javascripts/application.js
+insert  app/assets/javascripts/application.js
+create  app/assets/javascripts/components.js
+</code></p>
+
+<h2>修改 application.js</h2>
+
+<p>app/assets/javascripts/application.js</p>
+
+<p>把turbolinks 及 tree 移除，加入 react, react_ujs, components 目錄
+<code>
+ //= require jquery
+ //= require jquery_ujs
+ //= require react
+ //= require react_ujs
+ //= require components
+</code></p>
+
+<h2>修改環境設定檔</h2>
+
+<pre><code># config/environments/development.rb
+MyApp::Application.configure do
+  config.react.variant = :development
+end
+
+# config/environments/production.rb
+MyApp::Application.configure do
+  config.react.variant = :production
+end
+</code></pre>
+
+<h2>啟用 react-addons</h2>
+
+<p>在 application.rb 中啟用
+<code>
+MyApp::Application.configure do
+  config.react.addons = true # defaults to false
+end
+</code></p>
+
+<h2>撰寫第一支react</h2>
+
+<p>新增 <code>app/assets/javascripts/components/hello.es6</code></p>
+
+<pre><code>window.Home = ( window.Home || {} );
+window.Home = class Home extends React.Component{
+
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+    return(
+      &lt;div&gt;
+        Hello React and Rails
+      &lt;/div&gt;
+    );
+  }
+
+}
+</code></pre>
+
+<p>在 view 中加上 component, 例如在 &lsquo; home/index.html.erb &rsquo;</p>
+
+<pre><code>&lt;%= react_component("Home.Index")%&gt;
+</code></pre>
+
+<p>大功告成, 測試看看有沒有成功</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Webpack 介紹]]></title>

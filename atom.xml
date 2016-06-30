@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-06-29T23:40:54+08:00</updated>
+  <updated>2016-07-01T00:27:47+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,152 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在Rails中安裝React]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/06/30/react-in-rails/"/>
+    <updated>2016-06-30T23:55:11+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/06/30/react-in-rails</id>
+    <content type="html"><![CDATA[<h2>安裝 react gem</h2>
+
+<p>Gemfile 中加入
+使用 sprockets-es6 來寫ES6</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'react-rails'
+</span><span class='line'>gem 'sprockets-es6', require: "sprockets/es6"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bundle install</p>
+
+<h2>安裝 react 檔案</h2>
+
+<p>會建立相關的檔案</p>
+
+<p>執行 <code>rails g react:install</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g react:install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>會建立相關的檔案</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Running via Spring preloader in process 15876
+</span><span class='line'>create  app/assets/javascripts/components
+</span><span class='line'>create  app/assets/javascripts/components/.gitkeep
+</span><span class='line'>insert  app/assets/javascripts/application.js
+</span><span class='line'>insert  app/assets/javascripts/application.js
+</span><span class='line'>insert  app/assets/javascripts/application.js
+</span><span class='line'>create  app/assets/javascripts/components.js</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>修改 application.js</h2>
+
+<p>app/assets/javascripts/application.js</p>
+
+<p>把turbolinks 及 tree 移除，加入 react, react_ujs, components 目錄</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> //= require jquery
+</span><span class='line'> //= require jquery_ujs
+</span><span class='line'> //= require react
+</span><span class='line'> //= require react_ujs
+</span><span class='line'> //= require components</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>修改環境設定檔</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># config/environments/development.rb
+</span><span class='line'>MyApp::Application.configure do
+</span><span class='line'>  config.react.variant = :development
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># config/environments/production.rb
+</span><span class='line'>MyApp::Application.configure do
+</span><span class='line'>  config.react.variant = :production
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>啟用 react-addons</h2>
+
+<p>在 application.rb 中啟用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>MyApp::Application.configure do
+</span><span class='line'>  config.react.addons = true # defaults to false
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>撰寫第一支react</h2>
+
+<p>新增 <code>app/assets/javascripts/components/hello.es6</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>window.Home = ( window.Home || {} );
+</span><span class='line'>window.Home = class Home extends React.Component{
+</span><span class='line'>
+</span><span class='line'>  constructor(props){
+</span><span class='line'>    super(props);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  render(){
+</span><span class='line'>    return(
+</span><span class='line'>      &lt;div&gt;
+</span><span class='line'>        Hello React and Rails
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>    );
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在 view 中加上 component, 例如在 &lsquo; home/index.html.erb &rsquo;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= react_component("Home.Index")%&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成, 測試看看有沒有成功</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails Use Mixpanel]]></title>

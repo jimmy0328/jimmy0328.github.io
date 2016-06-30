@@ -9,8 +9,11 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是Mixpanel 現在的網站越來越多平台為了監控使用者行為分析，所以大多數人平台都會導入 GA (Google Analytics)，除了很方便整合外，這個服務也是免費的。
-除了GA 外，Mixpanel 這個服務也是一個很強的資料分析平台服務，至於 mixpanel 的功能，這邊不多做介紹 &hellip;">
+  <meta name="description" content="安裝 react gem Gemfile 中加入
+使用 sprockets-es6 來寫ES6 1
+2
+gem 'react-rails'
+gem 'sprockets-es6', require: "sprockets/es6" bundle install 安裝 react 檔案 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +69,172 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/30/react-in-rails/">在Rails中安裝React</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-30T23:55:11+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:55 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>安裝 react gem</h2>
+
+<p>Gemfile 中加入
+使用 sprockets-es6 來寫ES6</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'react-rails'
+</span><span class='line'>gem 'sprockets-es6', require: "sprockets/es6"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bundle install</p>
+
+<h2>安裝 react 檔案</h2>
+
+<p>會建立相關的檔案</p>
+
+<p>執行 <code>rails g react:install</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g react:install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>會建立相關的檔案</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Running via Spring preloader in process 15876
+</span><span class='line'>create  app/assets/javascripts/components
+</span><span class='line'>create  app/assets/javascripts/components/.gitkeep
+</span><span class='line'>insert  app/assets/javascripts/application.js
+</span><span class='line'>insert  app/assets/javascripts/application.js
+</span><span class='line'>insert  app/assets/javascripts/application.js
+</span><span class='line'>create  app/assets/javascripts/components.js</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>修改 application.js</h2>
+
+<p>app/assets/javascripts/application.js</p>
+
+<p>把turbolinks 及 tree 移除，加入 react, react_ujs, components 目錄</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> //= require jquery
+</span><span class='line'> //= require jquery_ujs
+</span><span class='line'> //= require react
+</span><span class='line'> //= require react_ujs
+</span><span class='line'> //= require components</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>修改環境設定檔</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># config/environments/development.rb
+</span><span class='line'>MyApp::Application.configure do
+</span><span class='line'>  config.react.variant = :development
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># config/environments/production.rb
+</span><span class='line'>MyApp::Application.configure do
+</span><span class='line'>  config.react.variant = :production
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>啟用 react-addons</h2>
+
+<p>在 application.rb 中啟用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>MyApp::Application.configure do
+</span><span class='line'>  config.react.addons = true # defaults to false
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>撰寫第一支react</h2>
+
+<p>新增 <code>app/assets/javascripts/components/hello.es6</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>window.Home = ( window.Home || {} );
+</span><span class='line'>window.Home = class Home extends React.Component{
+</span><span class='line'>
+</span><span class='line'>  constructor(props){
+</span><span class='line'>    super(props);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  render(){
+</span><span class='line'>    return(
+</span><span class='line'>      &lt;div&gt;
+</span><span class='line'>        Hello React and Rails
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>    );
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在 view 中加上 component, 例如在 &lsquo; home/index.html.erb &rsquo;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= react_component("Home.Index")%&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大功告成, 測試看看有沒有成功</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1701,129 +1870,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/19/roo-gem/">使用 Roo Gem 來讀取 Excel 內容</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-19T22:24:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:24 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>什麼是 roo</h2>
-
-<p>用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
-這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能</p>
-
-<h2>如何使用</h2>
-
-<pre><code class="`">  gem install roo
-</code></pre>
-
-<p> 另外如果有編碼的問題，請也一併用 iconv 來處理</p>
-
-<h2>範例</h2>
-
-<p>簡單的說明一下，假設我有一份 xlsx 的檔案，如下圖</p>
-
-<p><img src="/images/roo/xlsx_file.png" alt="Alt text" /></p>
-
-<p>接下來使用 roo 來簡單的讀取資料
-這邊我寫一支簡單的ruby 來測試一下，所以當我執行 <code>Excel.import("../hotels.xlsx")</code> 就可以把我要的xlsx試著print出來</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'roo'
-</span><span class='line'>require 'iconv'
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>class Hotel
-</span><span class='line'>  def initialize(name, address, coordinates)
-</span><span class='line'>    @name = name
-</span><span class='line'>    @address = address
-</span><span class='line'>    @coordinates = coordinates
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  def print
-</span><span class='line'>    "#{@name} | #{@address} | #{@coordinates}"
-</span><span class='line'>  end
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>class Excel
-</span><span class='line'>
-</span><span class='line'>  def self.import(file_path)
-</span><span class='line'>    xlsx = Roo::Spreadsheet.open(file_path)
-</span><span class='line'>    xlsx.first_row.upto(xlsx.last_row) do |row|
-</span><span class='line'>      name = xlsx.cell(row,'A')
-</span><span class='line'>      address = xlsx.cell(row,'B')
-</span><span class='line'>      coordinates = xlsx.cell(row,'C')
-</span><span class='line'>      puts Hotel.new(name, address, coordinates).print
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>Excel.import("../hotels.xlsx")
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成，下一篇再來實作一個檔案上傳可以import的功能</p>
-
-<h2>參考資料</h2>
-
-<p><a href="http://roo.rubyforge.org/">http://roo.rubyforge.org/</a>
-[<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>] (<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>)
-<a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true">Railscasts</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1839,6 +1885,10 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/06/30/react-in-rails/">在Rails中安裝React</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a>
       </li>
     
@@ -1852,10 +1902,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
     
       <li class="post">
         <a href="/blog/2016/06/24/rails-global/">Rails 多國語系－資料庫</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/23/rails-i18n/">Rails 多國語系- Rails_i18n</a>
       </li>
     
   </ul>
