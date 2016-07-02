@@ -12,6 +12,12 @@ categories: rails, actioncable
 
 在 HTML5 有支援 websocket 之後，開始有許多技術都出現了，server 主動推播訊息給 client 端的技術可以運用在太多地方了，有許多雲端的務服也開始陸訊出現，這些的一切都是為了實現 Real Time 的push 來誕生，例如： PubNub 、 Pusher 等。
 
+HTML5 Websocket Protocol 連線後，透過 API 可以建立Real Time 即時送出訊息運用
+![Alt text](https://www.websocket.org/img/websocket-architecture.jpg =800x)
+
+有興趣的可以參考
+https://www.websocket.org/aboutwebsocket.html
+
 之後有空在來談論一下以上這些技術，今天要來介紹的是 Rails 5 中最大的亮點之一的 ` Action Cable `
 
 ## 認識 Action Cable
