@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ActionCable入門 - 熊爸天下</title>
+  <meta name="author" content="Jimmy Lin">
+
+  
+  <meta name="description" content="認識 websocket 我相信對於 Pub/Sub 這個名詞應該很多人都不陌生, 但在於web 的使用是近幾年比較多的，這邊不做深入的介紹，有興趣的自行google一下 polling 、long pulling、Streaming 。 在 HTML5 有支援 websocket 之後， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/07/02/actioncable/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">熊爸天下</a></h1>
+  
+    <h2>技術筆記/生活點滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jimmy0328.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ActionCable入門</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-02T22:40:23+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>10:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>認識 websocket</h2>
+
+<p>我相信對於 Pub/Sub 這個名詞應該很多人都不陌生, 但在於web 的使用是近幾年比較多的，這邊不做深入的介紹，有興趣的自行google一下 polling 、long pulling、Streaming 。</p>
+
+<p>在 HTML5 有支援 websocket 之後，開始有許多技術都出現了，server 主動推播訊息給 client 端的技術可以運用在太多地方了，有許多雲端的務服也開始陸訊出現，這些的一切都是為了實現 Real Time 的push 來誕生，例如： PubNub 、 Pusher 等。</p>
+
+<p>之後有空在來談論一下以上這些技術，今天要來介紹的是 Rails 5 中最大的亮點之一的 <code>Action Cable</code></p>
+
+<h2>認識 Action Cable</h2>
+
+<p>幾個專有名</p>
+
+<ul>
+<li><p>Connection
+在 Rails 5 中是指 <code>ApplicationCable::Connection</code>
+用來建立 Cable 的連線</p></li>
+<li><p>Channel
+在 Rails 5 中是指 <code>ApplicationCable::Channel</code></p>
+
+<p>可以建立多條 Channel ，例如 聊天室可能就可以建立一個 room channel</p></li>
+<li><p>Streams
+用來把 client 送出的訊息傳送給 Subscribers</p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CommentsChannel.broadcast_to(@post, @comment)</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Broadcasting
+舉例說明，在聊天室中要傳送訊息出去，就是用 broadcasting 的機制，讓其它人可以同步收到訊息</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>WebNotificationsChannel.broadcast_to(
+</span><span class='line'>current_user,
+</span><span class='line'>  title: 'New things!',
+</span><span class='line'>  body: 'All the news fit to print'
+</span><span class='line'>)</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Subscriptions
+同Broadcasting , Subscriptions 就是為了接收有人 broadcasting 的資料。
+所以有接到資料的要實作內容。例如：在聊天室中收到訊息的就會把訊息更新到畫面中</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>App.cable.subscriptions.create { channel: "ChatChannel", room: "Best Room" },
+</span><span class='line'>  received: (data) -&gt;
+</span><span class='line'>    @appendLine(data)
+</span><span class='line'>
+</span><span class='line'>  appendLine: (data) -&gt;
+</span><span class='line'>    html = @createLine(data)
+</span><span class='line'>    $("[data-chat-room='Best Room']").append(html)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>架構圖</h2>
+
+<p><img src="https://heroku-blog-files.s3.amazonaws.com/1462551406-rails-rack.png" width="800" alt="Alt text" /></p>
+
+<p>資料來源
+<a href="https://blog.heroku.com/real_time_rails_implementing_websockets_in_rails_5_with_action_cable">https://blog.heroku.com/real_time_rails_implementing_websockets_in_rails_5_with_action_cable</a></p>
+
+<p>明天再來實作一個聊天室的文章</p>
+
+<h2>參考資料來源</h2>
+
+<p><a href="http://guides.rubyonrails.org/action_cable_overview.html">http://guides.rubyonrails.org/action_cable_overview.html</a>
+<a href="https://blog.heroku.com/real_time_rails_implementing_websockets_in_rails_5_with_action_cable">https://blog.heroku.com/real_time_rails_implementing_websockets_in_rails_5_with_action_cable</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jimmy Lin</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-07-02T22:40:23+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>10:40 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/actioncable/'>actioncable</a>, <a class='category' href='/blog/categories/rails/'>rails,</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/07/02/actioncable/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/07/02/actioncable/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/30/react-in-rails/" title="Previous Post: 在Rails中安裝React">&laquo; 在Rails中安裝React</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/07/02/actioncable/">ActionCable入門</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/30/react-in-rails/">在Rails中安裝React</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/25/rspec-in-rails-install/">Rspec in Rails 安裝篇</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jimmy Lin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
