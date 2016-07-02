@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Actioncable | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/actioncable/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-02T23:26:00+08:00</updated>
+  <updated>2016-07-02T23:37:10+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -23,6 +23,12 @@
 <p>我相信對於 Pub/Sub 這個名詞應該很多人都不陌生, 但在於web 的使用是近幾年比較多的，這邊不做深入的介紹，有興趣的自行google一下 polling 、long pulling、Streaming 。</p>
 
 <p>在 HTML5 有支援 websocket 之後，開始有許多技術都出現了，server 主動推播訊息給 client 端的技術可以運用在太多地方了，有許多雲端的務服也開始陸訊出現，這些的一切都是為了實現 Real Time 的push 來誕生，例如： PubNub 、 Pusher 等。</p>
+
+<p>HTML5 Websocket Protocol 連線後，透過 API 可以建立Real Time 即時送出訊息運用
+<img src="https://www.websocket.org/img/websocket-architecture.jpg" width="800" alt="Alt text" /></p>
+
+<p>有興趣的可以參考
+<a href="https://www.websocket.org/aboutwebsocket.html">https://www.websocket.org/aboutwebsocket.html</a></p>
 
 <p>之後有空在來談論一下以上這些技術，今天要來介紹的是 Rails 5 中最大的亮點之一的 <code>Action Cable</code></p>
 
