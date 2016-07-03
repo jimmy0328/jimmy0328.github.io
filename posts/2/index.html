@@ -9,8 +9,18 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="Simple, efficient background processing for Ruby. 之後會配合redis、rails 來做非同步的背景Job，今天先來一個sidekiq 的簡單ruby 程式練習 安裝 Step1 : 建立一個目錄 1
-mkdir MyJob Step2 : &hellip;">
+  <meta name="description" content="Block 目前最常見的寫法都是用block，主要是使用 do end 來構成一個block，例如 1
+2
+3
+4
+5
+arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] arr.collect! do |n| n * 2
+end 自己來寫一個看看 1
+2
+3
+4
+5
+6 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +76,203 @@ mkdir MyJob Step2 : &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/21/ruby-block-proc/">Ruby 中的block 及 Proc</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-21T11:23:17+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:23 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Block</h2>
+
+<p>目前最常見的寫法都是用block，主要是使用 do end 來構成一個block，例如</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+</span><span class='line'>
+</span><span class='line'>arr.collect! do |n|
+</span><span class='line'>  n * 2
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>自己來寫一個看看</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Array
+</span><span class='line'>  def foreach
+</span><span class='line'>    self.each_with_index do |n, i|
+</span><span class='line'>      self[i] = yield(n)
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+</span><span class='line'>arr.foreach do |n|
+</span><span class='line'>  n * 2
+</span><span class='line'>end
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Proc</h2>
+
+<p>這二種寫proc都可以</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>proc = Proc.new { puts "this is proc new"}
+</span><span class='line'>proc.call
+</span><span class='line'>
+</span><span class='line'>proc = Proc.new do
+</span><span class='line'>  puts "this is proc block too"
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>proc.call
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用lambda 的方式</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>proc = lambda{ puts "lambda"}
+</span><span class='line'>proc.call
+</span><span class='line'>
+</span><span class='line'>proc = -&gt; { puts "lambda too"}
+</span><span class='line'>proc.call</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>lambda to block</h2>
+
+<p>printer 是一個lambda ，因為在 pls.each 後只能放block，但可以透過 &amp; 來將block 轉成 proc</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pls = ["Ruby", "Python", "Java", "PHP", "Node"]
+</span><span class='line'>pls.each do |pl|
+</span><span class='line'> puts "I like #{pl} "
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>printer = lambda{|pl| puts "I like #{pl}, too " }
+</span><span class='line'>pls.each(&printer)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外有常見的二種寫法，結果是一樣的</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> tweets.map { |tweet| tweet.user }
+</span><span class='line'> tweets.map(&:user)</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>option block</h2>
+
+<p>可以使用 block_given? 來判斷傳入的是不是block</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Timeline
+</span><span class='line'>  attr_accessor :tweets
+</span><span class='line'>
+</span><span class='line'>  def print
+</span><span class='line'>    if block_given?
+</span><span class='line'>      tweets.each { |tweet| puts yield tweet }
+</span><span class='line'>    else
+</span><span class='line'>      puts tweets.join(", ")
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>timeline = Timeline.new
+</span><span class='line'>timeline.tweets = ["Ruby", "Python", "Java", "PHP", "Node"]
+</span><span class='line'>
+</span><span class='line'>timeline.print
+</span><span class='line'>timeline.print { |tweet|
+</span><span class='line'> "tweet: #{tweet}"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>心得</h2>
+
+<p>block 、 Proc 、lambda  都一直都很容易混亂的，所以這個部份我也常常都要回來重新查一下觀念及寫法</p>
+
+<h2>參考資料</h2>
+
+<ul>
+<li>CodeSchool</li>
+<li>[<a href="http://rubyer.me/blog/917/">http://rubyer.me/blog/917/</a>] (<a href="http://rubyer.me/blog/917/">http://rubyer.me/blog/917/</a>)</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1376,6 +1583,10 @@ Making TDD Productive and Fun.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/03/actioncable-demo/">使用 ActionCable 做聊天室</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/02/actioncable/">ActionCable入門</a>
       </li>
     
@@ -1389,10 +1600,6 @@ Making TDD Productive and Fun.</p>
     
       <li class="post">
         <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/25/rspec-in-rails-install/">Rspec in Rails 安裝篇</a>
       </li>
     
   </ul>
