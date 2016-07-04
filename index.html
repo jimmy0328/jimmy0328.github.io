@@ -9,14 +9,9 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="ActionCable Tutorial 實作一個簡易的聊天室 1. 建立 Rails Project 1
-rails new livechat 2. 建立room controller 1
-rails g controller rooms show 內容如下 1
-2
-3
-4
-5
-class &hellip;">
+  <meta name="description" content="說明 有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
+例如: 限制:id必須是整數 1
+match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +67,94 @@ class &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/04/constraints/">在Rails 中使用constraints來限制條件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-04T23:52:21+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:52 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>說明</h2>
+
+<p>有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
+例如:</p>
+
+<p>限制:id必須是整數</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt; /\d/}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>進階作法</h2>
+
+<p>有時侯限定的條件不會宣告在routes裡，也可以寫成class 來使用</p>
+
+<p>例如: admin/:id 這個id 是有條件限制, 條件寫在 AppConstraint</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>namespace :admin
+</span><span class='line'>  get ":id" =&gt; "apps#index",constraints: AppConstraint.new
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在AppConstraint 中定義一個matches? 來處理
+以下constraint 是限定<code>admin/ms1983</code> 及 <code>admin/promo</code> 才是有效的URL ，找不到的就會對應不到URL</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class AppConstraint
+</span><span class='line'>  def matches?(request)
+</span><span class='line'>    ActiveRecord::Base.connection_pool.with_connection do
+</span><span class='line'>      (["ms1983","promo"]+App.active.pluck(:title)).uniq.include? request.fullpath.gsub(/^\//, "")
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>加入autoload path</h2>
+
+<p>記得在 application.rb 加入, 這邊Rails 才可以知道 constraints 的存在</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>%w[constraints].each do |dir_name|
+</span><span class='line'>  config.autoload_paths &lt;&lt; Rails.root.join('lib', dir_name)
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>參考資料來源</h2>
+
+<p><a href="https://ihower.tw/rails4/routing.html">https://ihower.tw/rails4/routing.html</a>
+<a href="http://rails.ruby.tw/routing.html">http://rails.ruby.tw/routing.html</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1732,215 +1815,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/21/rails5-job-with-sidekiq/">Rails5 Job With Sidekiq</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-21T16:38:19+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>4:38 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>以下都是以Mac環境為例，linux 及 window 就不好意思了</p>
-
-<h2>安裝 sidekiq</h2>
-
-<h4>1. 首先，你的電腦必須安裝 Redis 資料庫，可以使用 Homebrew 安裝</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install redis
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>2. 在 Gemfile 中加入</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>3. bundle install</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4.加入 Job</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rails g job inspector</span></code></pre></td></tr></table></div></figure>
-
-
-<p>會產生 jobs 目錄及 一支 inspector_job.rb</p>
-
-<h4>5. 在inspector_job 中加入實作</h4>
-
-<p>在jobs/inspector_job.rb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class InspectorJob &lt; ApplicationJob
-</span><span class='line'>  queue_as :default
-</span><span class='line'>
-</span><span class='line'>  def perform(*args)
-</span><span class='line'>    puts "================== print inspector Job ============="
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>6. 宣告 job 使用sidekiq 來處理</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># in /config/application.rb
-</span><span class='line'>class Application &lt; Rails::Application
-</span><span class='line'>  # ...
-</span><span class='line'>  config.active_job.queue_adapter = :sidekiq
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>7. 加入redis 的config</h4>
-
-<p>新增 initializers/sidekiq.rb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Sidekiq.configure_server do |config|
-</span><span class='line'>  config.redis = Rails.application.secrets.redis
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>Sidekiq.configure_client do |config|
-</span><span class='line'>  config.redis = Rails.application.secrets.redis
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>8. redis 的連線我寫在secret.yml</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>略
-</span><span class='line'>development:
-</span><span class='line'>   secret_key_base:
-</span><span class='line'>   redis:
-</span><span class='line'>    :url: redis://localhost:6379
-</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>9. 執行Job</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>InspectorJob.perform_later("xxxx")
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>10.  Run the worker</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bundle exec sidekiq -e development</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>worker: bundle exec sidekiq -c 10 -q priority -q default</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>安裝sidekiq web UI</h2>
-
-<h4>1. route.rb 加入</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'sidekiq/web'
-</span><span class='line'>
-</span><span class='line'>Rails.application.routes.draw do
-</span><span class='line'>...
-</span><span class='line'>  mount Sidekiq::Web, at: '/sidekiq'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>2. gemfile 加入</h4>
-
-<p>Rails5 要用 sinatra master 的版本</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sinatra', github: 'sinatra'</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>3. 查看 web UI</h4>
-
-<p><a href="http://localhost:3000/sidekiq">http://localhost:3000/sidekiq</a></p>
-
-<h2>測試</h2>
-
-<h4>1. 在專案下先執行sidekiq</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sidekiq</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. rails console</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>InspectorJob.perform_later("xxx")</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>3.sidekiq log 會印出</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>2016-06-21T08:16:45.734Z 28527 TID-owmgdm1ak InspectorJob JID-fe520b589d7cbdbaa1f3bd5c INFO: start
-</span><span class='line'>================== print inspector Job =============
-</span><span class='line'>2016-06-21T08:16:45.738Z 28527 TID-owmgdm1ak InspectorJob JID-fe520b589d7cbdbaa1f3bd5c INFO: done: 0.004 sec</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>參考資料來源</h2>
-
-<p><a href="http://railscasts.com/episodes/366-sidekiq">http://railscasts.com/episodes/366-sidekiq</a>
-<a href="http://kakas-blog.logdown.com/posts/738075-used-in-rails-sidekiq">http://kakas-blog.logdown.com/posts/738075-used-in-rails-sidekiq</a>
-<a href="https://www.rubyplus.com/articles/3931-Rails-5-ActiveJob-Basics-with-Sidekiq">https://www.rubyplus.com/articles/3931-Rails-5-ActiveJob-Basics-with-Sidekiq</a>
-<a href="http://epigene.github.io/Rails5_Redis_And_Sidekiq/">http://epigene.github.io/Rails5_Redis_And_Sidekiq/</a>
-<a href="http://github.com/mperham/sidekiq/wiki/The-Basics">http://github.com/mperham/sidekiq/wiki/The-Basics</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1956,6 +1830,10 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/04/constraints/">在Rails 中使用constraints來限制條件</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/03/actioncable-demo/">使用 ActionCable 做聊天室</a>
       </li>
     
@@ -1969,10 +1847,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
     
       <li class="post">
         <a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
       </li>
     
   </ul>

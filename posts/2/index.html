@@ -9,18 +9,9 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="Block 目前最常見的寫法都是用block，主要是使用 do end 來構成一個block，例如 1
-2
-3
-4
-5
-arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] arr.collect! do |n| n * 2
-end 自己來寫一個看看 1
-2
-3
-4
-5
-6 &hellip;">
+  <meta name="description" content="以下都是以Mac環境為例，linux 及 window 就不好意思了 安裝 sidekiq 1. 首先，你的電腦必須安裝 Redis 資料庫，可以使用 Homebrew 安裝 1
+brew install redis 2. 在 Gemfile 中加入 1
+gem 'sidekiq' 3. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +67,215 @@ end 自己來寫一個看看 1
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/21/rails5-job-with-sidekiq/">Rails5 Job With Sidekiq</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-21T16:38:19+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>4:38 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>以下都是以Mac環境為例，linux 及 window 就不好意思了</p>
+
+<h2>安裝 sidekiq</h2>
+
+<h4>1. 首先，你的電腦必須安裝 Redis 資料庫，可以使用 Homebrew 安裝</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install redis
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2. 在 Gemfile 中加入</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3. bundle install</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>4.加入 Job</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g job inspector</span></code></pre></td></tr></table></div></figure>
+
+
+<p>會產生 jobs 目錄及 一支 inspector_job.rb</p>
+
+<h4>5. 在inspector_job 中加入實作</h4>
+
+<p>在jobs/inspector_job.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class InspectorJob &lt; ApplicationJob
+</span><span class='line'>  queue_as :default
+</span><span class='line'>
+</span><span class='line'>  def perform(*args)
+</span><span class='line'>    puts "================== print inspector Job ============="
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>6. 宣告 job 使用sidekiq 來處理</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># in /config/application.rb
+</span><span class='line'>class Application &lt; Rails::Application
+</span><span class='line'>  # ...
+</span><span class='line'>  config.active_job.queue_adapter = :sidekiq
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>7. 加入redis 的config</h4>
+
+<p>新增 initializers/sidekiq.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Sidekiq.configure_server do |config|
+</span><span class='line'>  config.redis = Rails.application.secrets.redis
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Sidekiq.configure_client do |config|
+</span><span class='line'>  config.redis = Rails.application.secrets.redis
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>8. redis 的連線我寫在secret.yml</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>development:
+</span><span class='line'>   secret_key_base:
+</span><span class='line'>   redis:
+</span><span class='line'>    :url: redis://localhost:6379
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>9. 執行Job</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>InspectorJob.perform_later("xxxx")
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>10.  Run the worker</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle exec sidekiq -e development</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>worker: bundle exec sidekiq -c 10 -q priority -q default</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>安裝sidekiq web UI</h2>
+
+<h4>1. route.rb 加入</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'sidekiq/web'
+</span><span class='line'>
+</span><span class='line'>Rails.application.routes.draw do
+</span><span class='line'>...
+</span><span class='line'>  mount Sidekiq::Web, at: '/sidekiq'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2. gemfile 加入</h4>
+
+<p>Rails5 要用 sinatra master 的版本</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sinatra', github: 'sinatra'</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3. 查看 web UI</h4>
+
+<p><a href="http://localhost:3000/sidekiq">http://localhost:3000/sidekiq</a></p>
+
+<h2>測試</h2>
+
+<h4>1. 在專案下先執行sidekiq</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sidekiq</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. rails console</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>InspectorJob.perform_later("xxx")</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3.sidekiq log 會印出</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>2016-06-21T08:16:45.734Z 28527 TID-owmgdm1ak InspectorJob JID-fe520b589d7cbdbaa1f3bd5c INFO: start
+</span><span class='line'>================== print inspector Job =============
+</span><span class='line'>2016-06-21T08:16:45.738Z 28527 TID-owmgdm1ak InspectorJob JID-fe520b589d7cbdbaa1f3bd5c INFO: done: 0.004 sec</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>參考資料來源</h2>
+
+<p><a href="http://railscasts.com/episodes/366-sidekiq">http://railscasts.com/episodes/366-sidekiq</a>
+<a href="http://kakas-blog.logdown.com/posts/738075-used-in-rails-sidekiq">http://kakas-blog.logdown.com/posts/738075-used-in-rails-sidekiq</a>
+<a href="https://www.rubyplus.com/articles/3931-Rails-5-ActiveJob-Basics-with-Sidekiq">https://www.rubyplus.com/articles/3931-Rails-5-ActiveJob-Basics-with-Sidekiq</a>
+<a href="http://epigene.github.io/Rails5_Redis_And_Sidekiq/">http://epigene.github.io/Rails5_Redis_And_Sidekiq/</a>
+<a href="http://github.com/mperham/sidekiq/wiki/The-Basics">http://github.com/mperham/sidekiq/wiki/The-Basics</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1441,134 +1641,9 @@ Making TDD Productive and Fun.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/03/10/github-octopress-install/">Github Octopress 安裝介紹</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-03-10T17:42:14+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:42 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>有許多網站都寫的很詳細了，這邊就做個簡單的整理就好
-這邊假設你己經有裝好ruby 及 bundler 環境，如果沒有安裝可以參考下方的參考連結
-步驗如下</p>
-
-<h3>建立github repository</h3>
-
-<p>必須先建立一個 repository, 在github 上可以有blog的方式，他的命名規則必須是 [username].github.io</p>
-
-<p><a href="https://github.com/new">New Repository</a></p>
-
-<p>[放圖片]</p>
-
-<h3>下載Octopress 及 安裝</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> git clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'> cd octopress
-</span><span class='line'> bundle install
-</span><span class='line'> rake install</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>將 blog 與 repository 同步</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake setup_github_pages</span></code></pre></td></tr></table></div></figure>
-
-
-<p>這邊會問你的github的repository, 所以要輸入git@github.com:xxxxx/xxxx.github.io.git</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake generate
-</span><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git add .
-</span><span class='line'>git commit -m "init blog"
-</span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成，將blog 上傳到 github</p>
-
-<h3>其它指令</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake 'new_post["title"]'
-</span><span class='line'>
-</span><span class='line'>rake generate   # Generates posts and pages into the public directory
-</span><span class='line'>
-</span><span class='line'>rake watch      # Watches source/ and sass/ for changes and regenerates
-</span><span class='line'>
-</span><span class='line'>rake preview    # Watches, and mounts a webserver at http://localhost:4000</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>參考連結</h1>
-
-<p><a href="http://zerodie.github.io/blog/2012/01/19/octopress-github-pages/">http://zerodie.github.io/blog/2012/01/19/octopress-github-pages/</a></p>
-
-<p><a href="http://wen00072-blog.logdown.com/posts/258497-octopress-installed-and-deployed-on-the-github-pages">http://wen00072-blog.logdown.com/posts/258497-octopress-installed-and-deployed-on-the-github-pages</a></p>
-
-<p><a href="http://octopress.org/docs/deploying/github/">http://octopress.org/docs/deploying/github/</a></p>
-
-<h1>其它問題</h1>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>zsr:1: no matches found: [rejected]
-</span><span class='line'>r: failed to push some refs to 'git@github.com:jimmy0328/jimmy0328.github.io.git'
-</span><span class='line'>hint: Updates were rejected because the tip of your current branch is behind
-</span><span class='line'>hint: its remote counterpart. Integrate the remote changes (e.g.
-</span><span class='line'>hint: 'git pull ...') before pushing again.
-</span><span class='line'>hint: See the 'Note about fast-forwards' in 'git push --help' for details.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>先切到_deploy的目錄</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git push origin master -f</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a href="http://blog.mohitkanwal.com/blog/2014/03/26/blogging-with-octopress-from-2-computers/">http://blog.mohitkanwal.com/blog/2014/03/26/blogging-with-octopress-from-2-computers/</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/posts/3">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1581,6 +1656,10 @@ Making TDD Productive and Fun.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/07/04/constraints/">在Rails 中使用constraints來限制條件</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/07/03/actioncable-demo/">使用 ActionCable 做聊天室</a>
@@ -1596,10 +1675,6 @@ Making TDD Productive and Fun.</p>
     
       <li class="post">
         <a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/25/rspec-test-model-controller/">使用 Rspec 搭配 Shoulda-matchers 測試 Model 及 Controller</a>
       </li>
     
   </ul>
