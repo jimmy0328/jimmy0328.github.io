@@ -47,11 +47,7 @@ rooms/show.html.erb
 
  建立 messages/_message.html.erb
 
-```html
-<div class="message">
-  <p> <%= message.context %> </p>
-</div>
-```
+![Alt text](/images/actioncable/chat_message.png =400x)
 
 #### 5. 建立ActionCable
 
