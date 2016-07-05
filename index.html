@@ -9,9 +9,9 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="說明 有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
-例如: 限制:id必須是整數 1
-match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hellip;">
+  <meta name="description" content="Rails 開發速度很快，但也很容易誤用造成效能很低落，很多原因都是出來n+1 沒有處理好，
+rack-mini-profiler 是一個很方便在畫面上就可以查看畫面執行速度及sql 效能問題 安裝 1
+gem 'rack-mini-profiler' bundle install 畫面 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,75 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/05/rack-mini-profiler/">使用 Rack Mini Profiler 來查看效能</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-05T22:47:59+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:47 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Rails 開發速度很快，但也很容易誤用造成效能很低落，很多原因都是出來n+1 沒有處理好，
+<code>rack-mini-profiler</code> 是一個很方便在畫面上就可以查看畫面執行速度及sql 效能問題</p>
+
+<h2>安裝</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'rack-mini-profiler'
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bundle install</p>
+
+<h2>畫面</h2>
+
+<p>預設會在畫面的左上角，也可以透過設定把它改到右上
+<img src="/images/profiler/view.png" width="400" alt="Alt text" /></p>
+
+<p>很明顯這個畫面有執行多次sql 問題
+<img src="/images/profiler/view_n_sql.png" width="400" alt="Alt text" /></p>
+
+<p>可以點開sql 查看明細</p>
+
+<p><img src="/images/profiler/view_n_sql_detail.png" width="400" alt="Alt text" /></p>
+
+<h2>其它</h2>
+
+<p>如果想要在正式機上只有管理者才能看到</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>before_action do
+</span><span class='line'>  if current_user && current_user.is_admin?
+</span><span class='line'>    Rack::MiniProfiler.authorize_request
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -223,19 +292,12 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
 <p> 建立 messages/_message.html.erb</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;message&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;p&gt;</span> <span class="err">&lt;</span>%= message.context %&gt; <span class="nt">&lt;/p&gt;</span>
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p><img src="/images/actioncable/chat_message.png" width="400" alt="Alt text" /></p>
 
 <h4>5. 建立ActionCable</h4>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>rails g channel room speak
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g channel room speak
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -249,15 +311,14 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
 <p>設定可以接受 cable 的 route</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>Rails.application.routes.draw do
-</span><span class='line'>  root to: &#39;rooms#show&#39;
-</span><span class='line'>  mount ActionCable.server =&gt; &#39;/cable&#39;
-</span><span class='line'>end
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.application.routes.draw do
+</span><span class='line'>  root to: 'rooms#show'
+</span><span class='line'>  mount ActionCable.server =&gt; '/cable'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
 
 <h4>7. 修改 assets/javascripts/channels/room.coffee</h4>
@@ -265,7 +326,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 <p>@perform &lsquo;speak&rsquo; 是指 speak chennel 要傳送的內容
 註冊好 App.room 的 speak 與 received 之後，就在輸入框設定keypress 事情的listener</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -283,7 +344,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>App.room = App.cable.subscriptions.create &quot;RoomChannel&quot;,
+</pre></td><td class='code'><pre><code class=''><span class='line'>App.room = App.cable.subscriptions.create "RoomChannel",
 </span><span class='line'>  connected: -&gt;
 </span><span class='line'>    # Called when the subscription is ready for use on the server
 </span><span class='line'>
@@ -291,24 +352,42 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 </span><span class='line'>    # Called when the subscription has been terminated by the server
 </span><span class='line'>
 </span><span class='line'>  received: (data) -&gt;
-</span><span class='line'>    $(&quot;#messages&quot;).append data[&#39;message&#39;]
+</span><span class='line'>    $("#messages").append data['message']
 </span><span class='line'>
 </span><span class='line'>  speak: (message) -&gt;
-</span><span class='line'>    @perform &#39;speak&#39;, message: message
+</span><span class='line'>    @perform 'speak', message: message
 </span><span class='line'>
-</span><span class='line'>$(document).on &quot;keypress&quot;, &quot;[data-behavior~=room_speaker]&quot;, (event) -&gt;
+</span><span class='line'>$(document).on "keypress", "[data-behavior~=room_speaker]", (event) -&gt;
 </span><span class='line'>  if event.keyCode is 13
 </span><span class='line'>    App.room.speak event.target.value
-</span><span class='line'>    event.target.value = &#39;&#39;
-</span><span class='line'>    event.preventDefault()
+</span><span class='line'>    event.target.value = ''
+</span><span class='line'>    event.preventDefault()</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>8. 建立Message Model</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g model message</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bundle install</p>
+
+<p>修改內容如下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Message &lt; ApplicationRecord
+</span><span class='line'>  after_create_commit { MessageBroadcastJob.perform_later self}
+</span><span class='line'>end
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>8. 修改 Server side 的Room Channel</h4>
+<h4>9. 修改 Server side 的Room Channel</h4>
 
 <p>修改 app/channels/room_channel.rb</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -321,29 +400,28 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>class RoomChannel <span class="nt">&lt; ApplicationCable::Channel</span>
-</span><span class='line'>  <span class="na">def</span> <span class="na">subscribed</span>
-</span><span class='line'>    <span class="na">stream_from</span> <span class="err">&quot;</span><span class="na">room_channel</span><span class="err">&quot;</span>
-</span><span class='line'>  <span class="na">end</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class RoomChannel &lt; ApplicationCable::Channel
+</span><span class='line'>  def subscribed
+</span><span class='line'>    stream_from "room_channel"
+</span><span class='line'>  end
 </span><span class='line'>
-</span><span class='line'>  <span class="na">def</span> <span class="na">unsubscribed</span>
-</span><span class='line'>    <span class="err">#</span> <span class="na">Any</span> <span class="na">cleanup</span> <span class="na">needed</span> <span class="na">when</span> <span class="na">channel</span> <span class="na">is</span> <span class="na">unsubscribed</span>
-</span><span class='line'>  <span class="na">end</span>
+</span><span class='line'>  def unsubscribed
+</span><span class='line'>    # Any cleanup needed when channel is unsubscribed
+</span><span class='line'>  end
 </span><span class='line'>
-</span><span class='line'>  <span class="na">def</span> <span class="na">speak</span><span class="err">(</span><span class="na">data</span><span class="err">)</span>
-</span><span class='line'>    <span class="na">Message</span><span class="err">.</span><span class="na">create</span> <span class="na">context:</span> <span class="na">data</span><span class="err">[&#39;</span><span class="na">message</span><span class="err">&#39;]</span>
-</span><span class='line'>  <span class="na">end</span>
-</span><span class='line'><span class="na">end</span>
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  def speak(data)
+</span><span class='line'>    Message.create context: data['message']
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>9. 使用ActiveJob 推送訊息</h4>
+<h4>10. 使用ActiveJob 推送訊息</h4>
 
 <p>Rails5 新增的 ApplicationControoler.renderer.render 功能
 之後再來聊
 總之這邊是broadcast messages/message 內容出去</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -356,53 +434,50 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>class MessageBroadcastJob <span class="nt">&lt; ApplicationJob</span>
-</span><span class='line'>  <span class="na">queue_as</span> <span class="na">:default</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class MessageBroadcastJob &lt; ApplicationJob
+</span><span class='line'>  queue_as :default
 </span><span class='line'>
-</span><span class='line'>  <span class="na">def</span> <span class="na">perform</span><span class="err">(</span><span class="na">message</span><span class="err">)</span>
-</span><span class='line'>    <span class="na">ActionCable</span><span class="err">.</span><span class="na">server</span><span class="err">.</span><span class="na">broadcast</span> <span class="err">&#39;</span><span class="na">room_channel</span><span class="err">&#39;,</span> <span class="na">message:</span> <span class="na">render_message</span><span class="err">(</span><span class="na">message</span><span class="err">)</span>
-</span><span class='line'>  <span class="na">end</span>
+</span><span class='line'>  def perform(message)
+</span><span class='line'>    ActionCable.server.broadcast 'room_channel', message: render_message(message)
+</span><span class='line'>  end
 </span><span class='line'>
-</span><span class='line'>  <span class="na">private</span>
+</span><span class='line'>  private
 </span><span class='line'>
-</span><span class='line'>  <span class="na">def</span> <span class="na">render_message</span><span class="err">(</span><span class="na">message</span><span class="err">)</span>
-</span><span class='line'>    <span class="na">ApplicationController</span><span class="err">.</span><span class="na">renderer</span><span class="err">.</span><span class="na">render</span><span class="err">(</span><span class="na">partial:</span> <span class="err">&#39;</span><span class="na">messages</span><span class="err">/</span><span class="na">message</span><span class="err">&#39;,</span> <span class="na">locals:</span> <span class="err">{</span><span class="na">message:</span> <span class="na">message</span><span class="err">})</span>
-</span><span class='line'>  <span class="na">end</span>
-</span><span class='line'><span class="na">end</span>
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  def render_message(message)
+</span><span class='line'>    ApplicationController.renderer.render(partial: 'messages/message', locals: {message: message})
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>10. 修改 application.rb</h4>
+<h4>11. 修改 application.rb</h4>
 
 <p>設定active_job 使用 sidekiq</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>class Application <span class="nt">&lt; Rails::Application</span>
-</span><span class='line'>  <span class="err">#</span> <span class="na">Settings</span> <span class="na">in</span> <span class="na">config</span><span class="err">/</span><span class="na">environments</span><span class="err">/*</span> <span class="na">take</span> <span class="na">precedence</span> <span class="na">over</span> <span class="na">those</span> <span class="na">specified</span> <span class="na">here</span><span class="err">.</span>
-</span><span class='line'>  <span class="err">#</span> <span class="na">Application</span> <span class="na">configuration</span> <span class="na">should</span> <span class="na">go</span> <span class="na">into</span> <span class="na">files</span> <span class="na">in</span> <span class="na">config</span><span class="err">/</span><span class="na">initializers</span>
-</span><span class='line'>  <span class="err">#</span> <span class="na">--</span> <span class="na">all</span> <span class="err">.</span><span class="na">rb</span> <span class="na">files</span> <span class="na">in</span> <span class="na">that</span> <span class="na">directory</span> <span class="na">are</span> <span class="na">automatically</span> <span class="na">loaded</span><span class="err">.</span>
-</span><span class='line'> <span class="na">config</span><span class="err">.</span><span class="na">active_job</span><span class="err">.</span><span class="na">queue_adapter =</span><span class="err"> </span><span class="s">:sidekiq</span>
-</span><span class='line'><span class="na">end</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Application &lt; Rails::Application
+</span><span class='line'>  # Settings in config/environments/* take precedence over those specified here.
+</span><span class='line'>  # Application configuration should go into files in config/initializers
+</span><span class='line'>  # -- all .rb files in that directory are automatically loaded.
+</span><span class='line'> config.active_job.queue_adapter = :sidekiq
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>11. 修改 environment/development.rb 及 production.rb</h4>
+<h4>12. 修改 environment/development.rb 及 production.rb</h4>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>config.action_cable.disable_request_forgery_protection = true
-</span></code></pre></td></tr></table></div></figure>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>config.action_cable.disable_request_forgery_protection = true</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>12. 修改 cable.yml</h4>
+<h4>13. 修改 cable.yml</h4>
 
 <p>在active job 我們是透過 redis 來處理server side 自己的 pub/sub</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -412,7 +487,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>development:
+</pre></td><td class='code'><pre><code class=''><span class='line'>development:
 </span><span class='line'>  adapter: redis
 </span><span class='line'>  url: redis://localhost:6379/2
 </span><span class='line'>
@@ -421,11 +496,18 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 </span><span class='line'>
 </span><span class='line'>production:
 </span><span class='line'>  adapter: redis
-</span><span class='line'>  url: redis://localhost:6379/1
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  url: redis://localhost:6379/1</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>13. 完成</h4>
+<h4>14. add sidekiq gem</h4>
+
+<p>Gemfile add sidekiq</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'sidekiq'</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>15. 完成</h4>
 
 <p>大功告成，但一開始我沒有提到要先裝 redis 及 sidekiq
 這邊完全是照著 <a href="https://blog.codeship.com/how-to-use-rails-active-job/">https://blog.codeship.com/how-to-use-rails-active-job/</a> DHH教學文來做的，但我也不知道為什麼他沒有設定redis也可以work, 總之因為要跑 active job 來推播，所以這個部份我有加了一些設定，否則其它全部都是一樣的</p>
@@ -1528,293 +1610,6 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/23/webpack/">Webpack 介紹</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-23T00:16:21+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>12:16 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>why webpack</h2>
-
-<p>It&rsquo;s like browserify but can split your app into multiple files. If you have multiple pages in a single-page app, the user only downloads code for just that page. If they go to another page, they don&rsquo;t redownload common code.</p>
-
-<p>It often replaces grunt or gulp because it can build and bundle CSS, preprocessed CSS, compile-to-JS languages and images, among other things.</p>
-
-<p>[webpack howto] (<a href="https://github.com/petehunt/webpack-howto#1-why-webpack">https://github.com/petehunt/webpack-howto#1-why-webpack</a>)</p>
-
-<p>還沒有時間消化，先整理在以下圖表</p>
-
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">參數 </th>
-<th style="text-align:left;"> 說明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">javascript </td>
-<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#4-compile-to-js-languages">https://github.com/petehunt/webpack-howto#4-compile-to-js-languages</a></td>
-</tr>
-<tr>
-<td style="text-align:left;">stylesheets and image </td>
-<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#5-stylesheets-and-images">https://github.com/petehunt/webpack-howto#5-stylesheets-and-images</a></td>
-</tr>
-<tr>
-<td style="text-align:left;">multi entrypoints </td>
-<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#7-multiple-entrypoints">https://github.com/petehunt/webpack-howto#7-multiple-entrypoints</a></td>
-</tr>
-<tr>
-<td style="text-align:left;">Async loading </td>
-<td style="text-align:left;"> <a href="https://github.com/petehunt/webpack-howto#9-async-loading">https://github.com/petehunt/webpack-howto#9-async-loading</a></td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>如何執行 webpack</h2>
-
-<p> 在下面的安裝做完之後，可以回來這邊測試一下</p>
-
-<ul>
-<li>webpack <code>for building once for development</code></li>
-<li>webpack -p <code>for building once for production (minification)</code></li>
-<li>webpack &ndash;watch <code>for continuous incremental build in development (fast!)</code></li>
-<li>webpack -d <code>to include source maps</code></li>
-</ul>
-
-
-<p>[webpack howto] (<a href="https://github.com/petehunt/webpack-howto#3-how-to-invoke-webpack">https://github.com/petehunt/webpack-howto#3-how-to-invoke-webpack</a>)</p>
-
-<h2>說明</h2>
-
-<p>簡單的說，他是在幫忙處理前端效能最佳化工具的一種，載入你要載入的程式，把 <strong>css, js, image&hellip; 等</strong>多個檔案的，分別壓縮成一支程式</p>
-
-<h2>安裝</h2>
-
-<h3>npm init</h3>
-
-<p>安裝完畢會產生一支 package.json</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>npm init</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>安裝react 並且與dependency 一起裝</h3>
-
-<p>此時會把相關的套件一起安裝，並且放在 node_modules的目錄下</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>npm install react react-dom --save</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>安裝 babel</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>npm install babel-loader babel-core babel-preset-es2015 babel-preset-react</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>新增 webpack.config.js</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>touch webpack.config.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>內容如下</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = {
-</span><span class='line'>  entry: './main.js',
-</span><span class='line'>  output: {
-</span><span class='line'>     path: './',
-</span><span class='line'>     filename: 'index.js',
-</span><span class='line'>  },
-</span><span class='line'>  devServer: {
-</span><span class='line'>    inline: true,
-</span><span class='line'>    port: 8888
-</span><span class='line'>  },
-</span><span class='line'>  module:{
-</span><span class='line'>    loaders: [
-</span><span class='line'>      {
-</span><span class='line'>        text: /\.js$/,
-</span><span class='line'>        exclude: /node_modules/,
-</span><span class='line'>        loader: 'babel',
-</span><span class='line'>        query: {
-</span><span class='line'>          presets: ['es2015', 'react']
-</span><span class='line'>        }
-</span><span class='line'>      }
-</span><span class='line'>    ]
-</span><span class='line'>  }
-</span><span class='line'>}
-</span><span class='line'>[webpack howto] (https://github.com/petehunt/webpack-howto#4-compile-to-js-languages)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>新增幾支要測試的程式</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>touch index.html App.js main.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>index.html</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;html&gt;
-</span><span class='line'> &lt;head&gt;
-</span><span class='line'>   &lt;meta charset="UTF-8"&gt;
-</span><span class='line'>   &lt;title&gt; webpack test &lt;/title&gt;
-</span><span class='line'> &lt;/head&gt;
-</span><span class='line'> &lt;body&gt;
-</span><span class='line'>   &lt;div id="app"&gt;&lt;/div&gt;
-</span><span class='line'>   &lt;script src="index.js"&gt; &lt;/script&gt;
-</span><span class='line'> &lt;/body&gt;
-</span><span class='line'>&lt;/html&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>App.js</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import React from 'react';
-</span><span class='line'>class App extends React.Component{
-</span><span class='line'>
-</span><span class='line'>  render(){
-</span><span class='line'>    return(
-</span><span class='line'>      &lt;div&gt; Hello, My first webpack page &lt;/div&gt;
-</span><span class='line'>    )
-</span><span class='line'>  }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>export default App</span></code></pre></td></tr></table></div></figure>
-
-
-<p>main.js</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import React from 'react';
-</span><span class='line'>import ReactDOM from 'react-dom';
-</span><span class='line'>import App from './App'
-</span><span class='line'>
-</span><span class='line'>ReactDOM.render(&lt;App /&gt;, document.getElementById('app'));</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>修改package.json</h3>
-
-<p>我們修改可以透過 webpac-dev-server 來啟動
-webpack-dev-server 是個小型的 node.js express server, 所以在啟動project我們會用到它</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "name": "webpack_sample",
-</span><span class='line'>  "version": "1.0.0",
-</span><span class='line'>  "description": "",
-</span><span class='line'>  "main": "index.js",
-</span><span class='line'>  "scripts": {
-</span><span class='line'>    "start": "webpack-dev-server"
-</span><span class='line'>  },
-</span><span class='line'>  "author": "",
-</span><span class='line'>  "license": "ISC",
-</span><span class='line'>  "dependencies": {
-</span><span class='line'>    "react": "^15.1.0",
-</span><span class='line'>    "react-dom": "^15.1.0"
-</span><span class='line'>  }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>大功告成，測試吧</h3>
-
-<p><a href="http://localhost:8888">http://localhost:8888</a></p>
-
-<h2>參考資料</h2>
-
-<ul>
-<li><p><a href="https://github.com/petehunt/webpack-howto">https://github.com/petehunt/webpack-howto</a></p></li>
-<li><p><a href="https://rhadow.github.io/2015/03/23/webpackIntro/">https://rhadow.github.io/2015/03/23/webpackIntro/</a></p></li>
-<li><p><a href="https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals">https://egghead.io/lessons/react-react-fundamentals-development-environment-setup?course=react-fundamentals</a></p></li>
-<li><p><a href="https://github.com/petehunt/webpack-howto/blob/master/README-zh.md">https://github.com/petehunt/webpack-howto/blob/master/README-zh.md</a></p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1830,6 +1625,10 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/05/rack-mini-profiler/">使用 Rack Mini Profiler 來查看效能</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/04/constraints/">在Rails 中使用constraints來限制條件</a>
       </li>
     
@@ -1843,10 +1642,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
     
       <li class="post">
         <a href="/blog/2016/06/30/react-in-rails/">在Rails中安裝React</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a>
       </li>
     
   </ul>

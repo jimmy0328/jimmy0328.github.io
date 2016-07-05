@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Redis | 熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-05T00:10:43+08:00</updated>
+  <updated>2016-07-05T23:32:40+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -56,35 +56,28 @@ end
 
 <p> 建立 messages/_message.html.erb</p>
 
-<p>```html</p>
+<p><img src="/images/actioncable/chat_message.png" width="400" alt="Alt text" /></p>
 
-<div class="message">
-  <p> <%= message.context %> </p>
-</div>
+<h4>5. 建立ActionCable</h4>
 
-
-<pre><code>
-#### 5. 建立ActionCable
+<pre><code>rails g channel room speak
 </code></pre>
 
-<p>rails g channel room speak</p>
+<p>會產生</p>
 
-<pre><code>會產生
+<p>app/channels/room_channel.rb</p>
 
-app/channels/room_channel.rb
+<p>app/assets/javascripts/channels/room.coffee</p>
 
-app/assets/javascripts/channels/room.coffee
+<h5>6. routes 設定</h5>
 
+<p>設定可以接受 cable 的 route</p>
 
-##### 6. routes 設定
-設定可以接受 cable 的 route
-</code></pre>
-
-<p>Rails.application.routes.draw do
-  root to: &lsquo;rooms#show&rsquo;
-  mount ActionCable.server => &lsquo;/cable&rsquo;
+<pre><code>Rails.application.routes.draw do
+  root to: 'rooms#show'
+  mount ActionCable.server =&gt; '/cable'
 end
-```</p>
+</code></pre>
 
 <h4>7. 修改 assets/javascripts/channels/room.coffee</h4>
 
@@ -111,26 +104,62 @@ $(document).on "keypress", "[data-behavior~=room_speaker]", (event) -&gt;
     event.preventDefault()
 </code></pre>
 
-<h4>8. 修改 Server side 的Room Channel</h4>
+<h4>8. 建立Message Model</h4>
 
-<p>修改 app/channels/room_channel.rb</p>
-
-<pre><code>class RoomChannel &lt; ApplicationCable::Channel
-  def subscribed
-    stream_from "room_channel"
-  end
-
-  def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
-  end
-
-  def speak(data)
-    Message.create context: data['message']
-  end
-end
+<pre><code>rails g model message
 </code></pre>
 
-<h4>9. 使用ActiveJob 推送訊息</h4>
+<p>bundle install</p>
+
+<p>修改內容如下
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Message &lt; ApplicationRecord
+</span><span class='line'>  after_create_commit { MessageBroadcastJob.perform_later self}
+</span><span class='line'>end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>#### 9. 修改 Server side 的Room Channel
+</span><span class='line'>
+</span><span class='line'>修改 app/channels/room_channel.rb
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;class RoomChannel &lt; ApplicationCable::Channel
+</span><span class='line'>  def subscribed
+</span><span class='line'>    stream_from &ldquo;room_channel&rdquo;
+</span><span class='line'>  end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  def unsubscribed
+</span><span class='line'>    # Any cleanup needed when channel is unsubscribed
+</span><span class='line'>  end&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;  def speak(data)
+</span><span class='line'>    Message.create context: data[&lsquo;message&rsquo;]
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>10. 使用ActiveJob 推送訊息</h4>
 
 <p>Rails5 新增的 ApplicationControoler.renderer.render 功能
 之後再來聊
@@ -151,7 +180,7 @@ end
 end
 </code></pre>
 
-<h4>10. 修改 application.rb</h4>
+<h4>11. 修改 application.rb</h4>
 
 <p>設定active_job 使用 sidekiq</p>
 
@@ -163,12 +192,12 @@ end
 end
 </code></pre>
 
-<h4>11. 修改 environment/development.rb 及 production.rb</h4>
+<h4>12. 修改 environment/development.rb 及 production.rb</h4>
 
 <pre><code>config.action_cable.disable_request_forgery_protection = true
 </code></pre>
 
-<h4>12. 修改 cable.yml</h4>
+<h4>13. 修改 cable.yml</h4>
 
 <p>在active job 我們是透過 redis 來處理server side 自己的 pub/sub</p>
 
@@ -184,7 +213,14 @@ production:
   url: redis://localhost:6379/1
 </code></pre>
 
-<h4>13. 完成</h4>
+<h4>14. add sidekiq gem</h4>
+
+<p>Gemfile add sidekiq
+<code>
+gem 'sidekiq'
+</code></p>
+
+<h4>15. 完成</h4>
 
 <p>大功告成，但一開始我沒有提到要先裝 redis 及 sidekiq
 這邊完全是照著 <a href="https://blog.codeship.com/how-to-use-rails-active-job/">https://blog.codeship.com/how-to-use-rails-active-job/</a> DHH教學文來做的，但我也不知道為什麼他沒有設定redis也可以work, 總之因為要跑 active job 來推播，所以這個部份我有加了一些設定，否則其它全部都是一樣的</p>
