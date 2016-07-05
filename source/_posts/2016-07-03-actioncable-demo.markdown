@@ -101,8 +101,22 @@ $(document).on "keypress", "[data-behavior~=room_speaker]", (event) ->
     event.preventDefault()
 ```
 
+#### 8. 建立Message Model
 
-#### 8. 修改 Server side 的Room Channel
+```
+rails g model message
+```
+bundle install
+
+修改內容如下
+```
+class Message < ApplicationRecord
+  after_create_commit { MessageBroadcastJob.perform_later self}
+end
+
+```
+
+#### 9. 修改 Server side 的Room Channel
 
 修改 app/channels/room_channel.rb
 
@@ -122,7 +136,7 @@ class RoomChannel < ApplicationCable::Channel
 end
 ```
 
-#### 9. 使用ActiveJob 推送訊息
+#### 10. 使用ActiveJob 推送訊息
 
 Rails5 新增的 ApplicationControoler.renderer.render 功能
 之後再來聊
@@ -144,7 +158,7 @@ class MessageBroadcastJob < ApplicationJob
 end
 ```
 
-#### 10. 修改 application.rb
+#### 11. 修改 application.rb
 
 設定active_job 使用 sidekiq
 
@@ -157,13 +171,13 @@ class Application < Rails::Application
 end
 ```
 
-#### 11. 修改 environment/development.rb 及 production.rb
+#### 12. 修改 environment/development.rb 及 production.rb
 
 ```
 config.action_cable.disable_request_forgery_protection = true
 ```
 
-#### 12. 修改 cable.yml
+#### 13. 修改 cable.yml
 
 在active job 我們是透過 redis 來處理server side 自己的 pub/sub
 
@@ -179,8 +193,14 @@ production:
   adapter: redis
   url: redis://localhost:6379/1
 ```
+#### 14. add sidekiq gem
 
-#### 13. 完成
+Gemfile add sidekiq
+```
+gem 'sidekiq'
+```
+
+#### 15. 完成
 大功告成，但一開始我沒有提到要先裝 redis 及 sidekiq
 這邊完全是照著 https://blog.codeship.com/how-to-use-rails-active-job/ DHH教學文來做的，但我也不知道為什麼他沒有設定redis也可以work, 總之因為要跑 active job 來推播，所以這個部份我有加了一些設定，否則其它全部都是一樣的
 
