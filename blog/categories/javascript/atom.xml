@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Javascript | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-07-07T23:47:28+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[將 Tripadvisor Widgets 掛到網站]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/07/07/tripadvisor-widgets/"/>
+    <updated>2016-07-07T23:31:05+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/07/07/tripadvisor-widgets</id>
+    <content type="html"><![CDATA[<p>TripAdvisor 是一個search全世界旅遊景點非常方便的平台
+<a href="https://www.tripadvisor.com">https://www.tripadvisor.com</a></p>
+
+<p>不管你是一個景點、商店、accommodation&hellip;等，在TripAdvisor一定要留下好的評價及星星數
+所以這篇要說明如何把TripAdvisor 的Widgets 掛到你的網址</p>
+
+<h2>TripAdvisor Widget 網址</h2>
+
+<p><a href="https://www.tripadvisor.com/Widgets">https://www.tripadvisor.com/Widgets</a></p>
+
+<p>輸入widget 找到你要公司
+<img src="/images/tripadvisor/widget.png" width="600" alt="Alt text" /></p>
+
+<p>最後在左邊選擇要放的 widget
+<img src="/images/tripadvisor/rtr-widget.png" width="600" alt="Alt text" /></p>
+
+<p>大功告成
+只要把code 放到 html 就可以了，非常簡單
+<img src="/images/tripadvisor/rtr-plugin-widget.png" width="600" alt="Alt text" /></p>
+]]></content>
+  </entry>
+  
+</feed>

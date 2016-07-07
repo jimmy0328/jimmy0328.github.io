@@ -9,7 +9,14 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="why webpack It&rsquo;s like browserify but can split your app into multiple files. If you have multiple pages in a single-page app, the user only &hellip;">
+  <meta name="description" content="說明 在Rails中要實現多國語系是一件很簡單的事，只要安裝 rails-i18n 就可以很輕鬆的實現了 安裝 安裝 rails-i18n 1
+gem 'rails-i18n' 記得 bundle install 在application.rb 中宣告 1
+2
+3
+4
+5
+略
+config. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +72,162 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/23/rails-i18n/">Rails 多國語系- Rails_i18n</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-23T23:49:43+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>11:49 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>說明</h2>
+
+<p>在Rails中要實現多國語系是一件很簡單的事，只要安裝 rails-i18n 就可以很輕鬆的實現了</p>
+
+<h2>安裝</h2>
+
+<h5>安裝 rails-i18n</h5>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'rails-i18n'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>記得 bundle install</p>
+
+<h4>在application.rb 中宣告</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}').to_s]
+</span><span class='line'>config.i18n.default_locale = :"zh-TW"
+</span><span class='line'>config.i18n.available_locales = [:en, :"zh-TW"]
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在application_controller.rb 中加入 locale 的判斷
+我們希望在url後面帶上locale來改變語系，例如: locale=en</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>
+</span><span class='line'>before_action :set_locale
+</span><span class='line'>
+</span><span class='line'>def set_locale
+</span><span class='line'>  if params[:locale] && I18n.available_locales.include?( params[:locale].to_sym )
+</span><span class='line'>     session[:locale] = params[:locale]
+</span><span class='line'>  end
+</span><span class='line'>   I18n.locale = session[:locale] || I18n.default_locale
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>設定多國語系的內容</h2>
+
+<p>以中文與英文二個語系為例
+在locales中加入</p>
+
+<p><img src="/images/i18n/locale_folder.png" alt="Alt text" /></p>
+
+<p>locales/post/en.yml</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>en:
+</span><span class='line'>  post:
+</span><span class='line'>    title: "Title"
+</span><span class='line'>    context: "Context"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>locales/post/zh-TW.yml</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>zh-TW:
+</span><span class='line'>  post:
+</span><span class='line'>    title: "標題"
+</span><span class='line'>    context: "內容"</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用方式</h2>
+
+<p>在 erb 中使用 t(&ldquo;yml的設定方式&rdquo;)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>略
+</span><span class='line'>  &lt;thead&gt;
+</span><span class='line'>    &lt;tr&gt;
+</span><span class='line'>      &lt;th&gt;&lt;%= t("post.title") %&gt;&lt;/th&gt;
+</span><span class='line'>      &lt;th&gt;&lt;%= t("post.context") %&gt;&lt;/th&gt;
+</span><span class='line'>      &lt;th colspan="3"&gt;&lt;/th&gt;
+</span><span class='line'>    &lt;/tr&gt;
+</span><span class='line'>  &lt;/thead&gt;
+</span><span class='line'>略
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>測試</h2>
+
+<p><a href="http://localhost:3000?locale=en">http://localhost:3000?locale=en</a></p>
+
+<p><img src="/images/i18n/locale_test_en.png" alt="Alt text" /></p>
+
+<p><a href="http://localhost:3000?locale=zh-TW">http://localhost:3000?locale=zh-TW</a></p>
+
+<p><img src="/images/i18n/locale_test_zh.png" alt="Alt text" /></p>
+
+<h2>參考資料</h2>
+
+<p><a href="http://guides.rubyonrails.org/i18n.html">http://guides.rubyonrails.org/i18n.html</a>
+<a href="http://juanitofatas.com/2014/06/25/rails-i18n-intro/">http://juanitofatas.com/2014/06/25/rails-i18n-intro/</a>
+<a href="https://github.com/svenfuchs/rails-i18n">https://github.com/svenfuchs/rails-i18n</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1569,171 +1732,6 @@ Making TDD Productive and Fun.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/14/use-acts-as-taggable-on-gem/">Acts_as_taggable_on Gem 介紹</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-14T22:08:51+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:08 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Rails中使用tag方便整合的gem</p>
-
-<p><a href="https://github.com/mbleigh/acts-as-taggable-on">GitHub 官網</a></p>
-
-<h2>安裝步驟</h2>
-
-<p>Step1: Gemfile中加上</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'acts-as-taggable-on'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>回command line 執行 bundle install</p>
-
-<p>Step2: 執行gem 的install</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake acts_as_taggable_on_engine:install:migrations</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Step3: migrate</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:migrate</span></code></pre></td></tr></table></div></figure>
-
-
-<p>P.S 如果你使用的資料庫是MySQL 可以另外參加 <a href="https://github.com/mbleigh/acts-as-taggable-on#for-mysql-users">https://github.com/mbleigh/acts-as-taggable-on#for-mysql-users</a></p>
-
-<h2>如何使用</h2>
-
-<p>在Model 中的宣告方式有二種</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class User &lt; ActiveRecord::Base
-</span><span class='line'>  acts_as_taggable
-</span><span class='line'>  acts_as_taggable_on :skill, :interest
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>所以在Controller 中的使用方式, 有依據以上二種設定方式有不同的參數值，分別如下</p>
-
-<p>如果使用<code>acts_as_taggable</code> 後面不接任何參數，那default使用 tags_list</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class UsersController &lt; ApplicationController
-</span><span class='line'>  def user_params
-</span><span class='line'>    params.require(:user).permit(:name, :tag_list)
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果使用 <code>acts_as_taggable_on :skills, :interests</code>, 那就有區分 skills_list 與 interests_list</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class UsersController &lt; ApplicationController
-</span><span class='line'>  def user_params
-</span><span class='line'>    params.require(:user).permit(:name, :skill_list, interest_list)
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>大功告成</h2>
-
-<p>以上是最簡單的設定方式，前端只要送對應的 tag_list 或是 skill_list 過來即可</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= form_for :user , method: :post, url: users_path do |f| %&gt;
-</span><span class='line'>略
-</span><span class='line'>&lt;%= f.text_field :skill_list%&gt;
-</span><span class='line'>&lt;%= f.text_field :interest_list%&gt;
-</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
-
-
-<p>P.S 輸入的值預設是用逗號區隔開來，例如 interest_list 的值為<code>movie, game, swim</code></p>
-
-<h2>提供了找出最多與最少使用的tag</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ActsAsTaggableOn::Tag.most_used(10)
-</span><span class='line'>ActsAsTaggableOn::Tag.least_used(10)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>預設不給值是抓前20筆</p>
-
-<h2>其它用法介紹</h2>
-
-<p>使用 add 及 remove 來新增及刪除tag</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@user.tag_list.add("awesome")   # add a single tag. alias for &lt;&lt;
-</span><span class='line'>@user.tag_list.remove("awesome") # remove a single tag</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@user.tag_list.add("awesome", "slick")
-</span><span class='line'>@user.tag_list.remove("awesome", "slick")</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以很暴力的直接給他值</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@user.tag_list = "awesome, slick, hefty"
-</span><span class='line'>@user.save
-</span><span class='line'>@user.reload
-</span><span class='line'>@user.tags
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>心得</h2>
-
-<p>此gem 提供很多不錯的helper，是很簡單就可以整合到專案上的GEM
-如果有注意看migration的就會發現它全部都是在控制 tag 與 tagging 二個 table
-最後如果想要更了解這個gem的使用可以參考 <a href="https://github.com/mbleigh/acts-as-taggable-on">GitHub 官網</a>
-在RailsCase 也有另一個教學可以參考<a href="http://railscasts.com/episodes/382-tagging">RailsCasts</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -1751,6 +1749,10 @@ Making TDD Productive and Fun.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/07/tripadvisor-widgets/">將 Tripadvisor Widgets 掛到網站</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/05/rack-mini-profiler/">使用 Rack Mini Profiler 來查看效能</a>
       </li>
     
@@ -1764,10 +1766,6 @@ Making TDD Productive and Fun.</p>
     
       <li class="post">
         <a href="/blog/2016/07/02/actioncable/">ActionCable入門</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/06/30/react-in-rails/">在Rails中安裝React</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-05T23:32:40+08:00</updated>
+  <updated>2016-07-07T23:47:28+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,33 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[將 Tripadvisor Widgets 掛到網站]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/07/07/tripadvisor-widgets/"/>
+    <updated>2016-07-07T23:31:05+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/07/07/tripadvisor-widgets</id>
+    <content type="html"><![CDATA[<p>TripAdvisor 是一個search全世界旅遊景點非常方便的平台
+<a href="https://www.tripadvisor.com">https://www.tripadvisor.com</a></p>
+
+<p>不管你是一個景點、商店、accommodation&hellip;等，在TripAdvisor一定要留下好的評價及星星數
+所以這篇要說明如何把TripAdvisor 的Widgets 掛到你的網址</p>
+
+<h2>TripAdvisor Widget 網址</h2>
+
+<p><a href="https://www.tripadvisor.com/Widgets">https://www.tripadvisor.com/Widgets</a></p>
+
+<p>輸入widget 找到你要公司
+<img src="http://jimmy0328.github.io/images/tripadvisor/widget.png" width="600" alt="Alt text" /></p>
+
+<p>最後在左邊選擇要放的 widget
+<img src="http://jimmy0328.github.io/images/tripadvisor/rtr-widget.png" width="600" alt="Alt text" /></p>
+
+<p>大功告成
+只要把code 放到 html 就可以了，非常簡單
+<img src="http://jimmy0328.github.io/images/tripadvisor/rtr-plugin-widget.png" width="600" alt="Alt text" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用 Rack Mini Profiler 來查看效能]]></title>
@@ -2675,151 +2702,6 @@ Making TDD Productive and Fun.</p>
 
 
 <p>打完收工</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Acts_as_taggable_on Gem 介紹]]></title>
-    <link href="http://jimmy0328.github.io/blog/2016/06/14/use-acts-as-taggable-on-gem/"/>
-    <updated>2016-06-14T22:08:51+08:00</updated>
-    <id>http://jimmy0328.github.io/blog/2016/06/14/use-acts-as-taggable-on-gem</id>
-    <content type="html"><![CDATA[<p>Rails中使用tag方便整合的gem</p>
-
-<p><a href="https://github.com/mbleigh/acts-as-taggable-on">GitHub 官網</a></p>
-
-<h2>安裝步驟</h2>
-
-<p>Step1: Gemfile中加上</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'acts-as-taggable-on'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>回command line 執行 bundle install</p>
-
-<p>Step2: 執行gem 的install</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake acts_as_taggable_on_engine:install:migrations</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Step3: migrate</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:migrate</span></code></pre></td></tr></table></div></figure>
-
-
-<p>P.S 如果你使用的資料庫是MySQL 可以另外參加 <a href="https://github.com/mbleigh/acts-as-taggable-on#for-mysql-users">https://github.com/mbleigh/acts-as-taggable-on#for-mysql-users</a></p>
-
-<h2>如何使用</h2>
-
-<p>在Model 中的宣告方式有二種</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class User &lt; ActiveRecord::Base
-</span><span class='line'>  acts_as_taggable
-</span><span class='line'>  acts_as_taggable_on :skill, :interest
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>所以在Controller 中的使用方式, 有依據以上二種設定方式有不同的參數值，分別如下</p>
-
-<p>如果使用<code>acts_as_taggable</code> 後面不接任何參數，那default使用 tags_list</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class UsersController &lt; ApplicationController
-</span><span class='line'>  def user_params
-</span><span class='line'>    params.require(:user).permit(:name, :tag_list)
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果使用 <code>acts_as_taggable_on :skills, :interests</code>, 那就有區分 skills_list 與 interests_list</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class UsersController &lt; ApplicationController
-</span><span class='line'>  def user_params
-</span><span class='line'>    params.require(:user).permit(:name, :skill_list, interest_list)
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>大功告成</h2>
-
-<p>以上是最簡單的設定方式，前端只要送對應的 tag_list 或是 skill_list 過來即可</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= form_for :user , method: :post, url: users_path do |f| %&gt;
-</span><span class='line'>略
-</span><span class='line'>&lt;%= f.text_field :skill_list%&gt;
-</span><span class='line'>&lt;%= f.text_field :interest_list%&gt;
-</span><span class='line'>略</span></code></pre></td></tr></table></div></figure>
-
-
-<p>P.S 輸入的值預設是用逗號區隔開來，例如 interest_list 的值為<code>movie, game, swim</code></p>
-
-<h2>提供了找出最多與最少使用的tag</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ActsAsTaggableOn::Tag.most_used(10)
-</span><span class='line'>ActsAsTaggableOn::Tag.least_used(10)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>預設不給值是抓前20筆</p>
-
-<h2>其它用法介紹</h2>
-
-<p>使用 add 及 remove 來新增及刪除tag</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@user.tag_list.add("awesome")   # add a single tag. alias for &lt;&lt;
-</span><span class='line'>@user.tag_list.remove("awesome") # remove a single tag</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@user.tag_list.add("awesome", "slick")
-</span><span class='line'>@user.tag_list.remove("awesome", "slick")</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以很暴力的直接給他值</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@user.tag_list = "awesome, slick, hefty"
-</span><span class='line'>@user.save
-</span><span class='line'>@user.reload
-</span><span class='line'>@user.tags
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>心得</h2>
-
-<p>此gem 提供很多不錯的helper，是很簡單就可以整合到專案上的GEM
-如果有注意看migration的就會發現它全部都是在控制 tag 與 tagging 二個 table
-最後如果想要更了解這個gem的使用可以參考 <a href="https://github.com/mbleigh/acts-as-taggable-on">GitHub 官網</a>
-在RailsCase 也有另一個教學可以參考<a href="http://railscasts.com/episodes/382-tagging">RailsCasts</a></p>
 ]]></content>
   </entry>
   
