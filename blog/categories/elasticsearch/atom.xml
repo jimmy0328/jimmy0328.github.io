@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Elasticsearch | 熊爸天下]]></title>
+  <link href="http://jimmy0328.github.io/blog/categories/elasticsearch/atom.xml" rel="self"/>
+  <link href="http://jimmy0328.github.io/"/>
+  <updated>2016-07-09T21:31:34+08:00</updated>
+  <id>http://jimmy0328.github.io/</id>
+  <author>
+    <name><![CDATA[Jimmy Lin]]></name>
+    <email><![CDATA[jimmy0328@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Elasticsearch 介紹]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/"/>
+    <updated>2016-07-09T17:45:41+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch</id>
+    <content type="html"><![CDATA[<h2>什麼是 ElastichSearch</h2>
+
+<p><img src="https://www.elastic.co/assets/blt79de4c53eaf2f299/elastic_usergroup.png" width="600" alt="Alt text" /></p>
+
+<p>ElastichSearch 是一套Java開發使用 Lucence 作為核心, ELＳ可以實現索引和搜索功能的功能，使用簡單 RESTful API 的方式來操作(因為如果直接使用 Lucence 是很複雜的)，所以在操作全文搜索就變的很簡單了。</p>
+
+<h2>安裝</h2>
+
+<p>下載位置 <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a></p>
+
+<p>可以直接下載 zip</p>
+
+<p>在elasticsearch-[version] 下執行</p>
+
+<pre><code>./bin/elasticsearch
+</code></pre>
+
+<p>啟動成功的畫面</p>
+
+<p><img src="/images/elasticsearch/start_server.png" width="600" alt="Alt text" /></p>
+
+<h2>測試REATful API</h2>
+
+<h4>新增索引</h4>
+
+<pre><code>curl -XPUT http://localhost:9200/rtaiwanr/spot/1 -d '{  "user": "jimmy","message": "Trying out elasticsearch, sfar so good?"}'
+</code></pre>
+
+<p><img src="/images/elasticsearch/new.png" width="600" alt="Alt text" /></p>
+
+<h4>Search API</h4>
+
+<pre><code>curl -XGET http://localhost:9200/rtaiwanr/spot/_search -d '{  "query" : {"term" : { "user": "jimmy" }}}'
+</code></pre>
+
+<p><img src="/images/elasticsearch/search.png" width="600" alt="Alt text" /></p>
+
+<h2>其它</h2>
+
+<p>這篇沒有講太多的 ElasticSearch 相關，會提到elasticSearch 安裝而己，是因為下一篇我要寫 Rails 與 ElasticSearch 的整合，所以只是要基本的概念</p>
+
+<p>如果要進階要了解ElasticSearch 的範疇還有很多
+1. ElasticSearch
+2. Logstash
+3. Kibana
+之後有空再找時間來研究</p>
+
+<h2>參考資料</h2>
+
+<p><a href="https://www.elastic.co/">https://www.elastic.co/</a></p>
+
+<p><a href="http://es.xiaoleilu.com/010_Intro/05_What_is_it.html">http://es.xiaoleilu.com/010_Intro/05_What_is_it.html</a></p>
+
+<p><a href="http://reality.hk/2011/10/19/using-elasticsearch/">http://reality.hk/2011/10/19/using-elasticsearch/</a></p>
+
+<p><a href="http://zettadata.blogspot.tw/2014/09/elkelastic-searchlogstashkibanalog.html">http://zettadata.blogspot.tw/2014/09/elkelastic-searchlogstashkibanalog.html</a></p>
+]]></content>
+  </entry>
+  
+</feed>

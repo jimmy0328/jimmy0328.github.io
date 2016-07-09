@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在Rails 中使用constraints來限制條件 - 熊爸天下</title>
+  <title>Elasticsearch 介紹 - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="說明 有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
-例如: 限制:id必須是整數 1
-match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hellip;">
+  <meta name="description" content="什麼是 ElastichSearch ElastichSearch 是一套Java開發使用 Lucence 作為核心, ELＳ可以實現索引和搜索功能的功能，使用簡單 RESTful API 的方式來操作(因為如果直接使用 Lucence 是很複雜的)，所以在操作全文搜索就變的很簡單了。 安裝 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/07/04/constraints/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -70,7 +68,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
   
   <header>
     
-      <h1 class="entry-title">在Rails 中使用constraints來限制條件</h1>
+      <h1 class="entry-title">Elasticsearch 介紹</h1>
     
     
       <p class="meta">
@@ -79,73 +77,74 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
 
 
-<time class='entry-date' datetime='2016-07-04T23:52:21+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:52 pm</span></time>
+<time class='entry-date' datetime='2016-07-09T17:45:41+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:45 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>說明</h2>
+<div class="entry-content"><h2>什麼是 ElastichSearch</h2>
 
-<p>有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
-例如:</p>
+<p><img src="https://www.elastic.co/assets/blt79de4c53eaf2f299/elastic_usergroup.png" width="600" alt="Alt text" /></p>
 
-<p>限制:id必須是整數</p>
+<p>ElastichSearch 是一套Java開發使用 Lucence 作為核心, ELＳ可以實現索引和搜索功能的功能，使用簡單 RESTful API 的方式來操作(因為如果直接使用 Lucence 是很複雜的)，所以在操作全文搜索就變的很簡單了。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt; /\d/}</span></code></pre></td></tr></table></div></figure>
+<h2>安裝</h2>
 
+<p>下載位置 <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a></p>
 
-<h2>進階作法</h2>
+<p>可以直接下載 zip</p>
 
-<p>有時侯限定的條件不會宣告在routes裡，也可以寫成class 來使用</p>
-
-<p>例如: admin/:id 這個id 是有條件限制, 條件寫在 AppConstraint</p>
+<p>在elasticsearch-[version] 下執行</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>namespace :admin
-</span><span class='line'>  get ":id" =&gt; "apps#index",constraints: AppConstraint.new
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>./bin/elasticsearch
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>在AppConstraint 中定義一個matches? 來處理
-以下constraint 是限定<code>admin/ms1983</code> 及 <code>admin/promo</code> 才是有效的URL ，找不到的就會對應不到URL</p>
+<p>啟動成功的畫面</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class AppConstraint
-</span><span class='line'>  def matches?(request)
-</span><span class='line'>    ActiveRecord::Base.connection_pool.with_connection do
-</span><span class='line'>      (["ms1983","promo"]+App.active.pluck(:title)).uniq.include? request.fullpath.gsub(/^\//, "")
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+<p><img src="/images/elasticsearch/start_server.png" width="600" alt="Alt text" /></p>
 
+<h2>測試REATful API</h2>
 
-<h2>加入autoload path</h2>
-
-<p>記得在 application.rb 加入, 這邊Rails 才可以知道 constraints 的存在</p>
+<h4>新增索引</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>%w[constraints].each do |dir_name|
-</span><span class='line'>  config.autoload_paths &lt;&lt; Rails.root.join('lib', dir_name)
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -XPUT http://localhost:9200/rtaiwanr/spot/1 -d '{  "user": "jimmy","message": "Trying out elasticsearch, sfar so good?"}'
+</span></code></pre></td></tr></table></div></figure>
 
 
-<h2>參考資料來源</h2>
+<p><img src="/images/elasticsearch/new.png" width="600" alt="Alt text" /></p>
 
-<p><a href="https://ihower.tw/rails4/routing.html">https://ihower.tw/rails4/routing.html</a>
-<a href="http://rails.ruby.tw/routing.html">http://rails.ruby.tw/routing.html</a></p>
+<h4>Search API</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -XGET http://localhost:9200/rtaiwanr/spot/_search -d '{  "query" : {"term" : { "user": "jimmy" }}}'</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/elasticsearch/search.png" width="600" alt="Alt text" /></p>
+
+<h2>其它</h2>
+
+<p>這篇沒有講太多的 ElasticSearch 相關，會提到elasticSearch 安裝而己，是因為下一篇我要寫 Rails 與 ElasticSearch 的整合，所以只是要基本的概念</p>
+
+<p>如果要進階要了解ElasticSearch 的範疇還有很多
+1. ElasticSearch
+2. Logstash
+3. Kibana
+之後有空再找時間來研究</p>
+
+<h2>參考資料</h2>
+
+<p><a href="https://www.elastic.co/">https://www.elastic.co/</a></p>
+
+<p><a href="http://es.xiaoleilu.com/010_Intro/05_What_is_it.html">http://es.xiaoleilu.com/010_Intro/05_What_is_it.html</a></p>
+
+<p><a href="http://reality.hk/2011/10/19/using-elasticsearch/">http://reality.hk/2011/10/19/using-elasticsearch/</a></p>
+
+<p><a href="http://zettadata.blogspot.tw/2014/09/elkelastic-searchlogstashkibanalog.html">http://zettadata.blogspot.tw/2014/09/elkelastic-searchlogstashkibanalog.html</a></p>
 </div>
 
 
@@ -161,12 +160,12 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
 
 
-<time class='entry-date' datetime='2016-07-04T23:52:21+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:52 pm</span></time>
+<time class='entry-date' datetime='2016-07-09T17:45:41+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:45 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rails/'>rails</a>
+    <a class='category' href='/blog/categories/elasticsearch/'>elasticsearch</a>
   
 </span>
 
@@ -175,7 +174,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/07/04/constraints/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/07/04/constraints/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/" >Tweet</a>
   
   
   
@@ -184,10 +183,8 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/07/03/actioncable-demo/" title="Previous Post: 使用 ActionCable 做聊天室">&laquo; 使用 ActionCable 做聊天室</a>
+        <a class="basic-alignment left" href="/blog/2016/07/07/tripadvisor-widgets/" title="Previous Post:  將 TripAdvisor Widgets 掛到網站">&laquo;  將 TripAdvisor Widgets 掛到網站</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/07/05/rack-mini-profiler/" title="Next Post: 使用 rack mini profiler 來查看效能">使用 rack mini profiler 來查看效能 &raquo;</a>
       
     </p>
   </footer>
