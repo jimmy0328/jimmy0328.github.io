@@ -9,7 +9,8 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是 ElastichSearch ElastichSearch 是一套Java開發使用 Lucence 作為核心, ELＳ可以實現索引和搜索功能的功能，使用簡單 RESTful API 的方式來操作(因為如果直接使用 Lucence 是很複雜的)，所以在操作全文搜索就變的很簡單了。 安裝 &hellip;">
+  <meta name="description" content="承上一篇(http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/)
+怎麼在 Rails 中實現 ElastichSearch 的全文檢索呢 以下假設要search Boook 安裝 安裝 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +66,142 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/09/elasticsearch-in-rails/">在 Rails 中使用 Elasticsearch</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-09T22:34:24+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:34 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>承上一篇(<a href="http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/">http://jimmy0328.github.io/blog/2016/07/09/introduction-elasticsearch/</a>)
+怎麼在 Rails 中實現 ElastichSearch 的全文檢索呢</p>
+
+<p>以下假設要search Boook</p>
+
+<h2>安裝</h2>
+
+<h4>安裝 elastichsearch-model gem</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'elasticsearch-model', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bundle install</p>
+
+<h4>設定初始化</h4>
+
+<p>新增 config/initializers/elastichsearch.rb</p>
+
+<p>這邊假設index 名稱為 els ，這邊請自行修改成自己的 index name</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Elasticsearch::Model.client = Elasticsearch::Client.new(Rails.application.secrets.elasticsearch)
+</span><span class='line'>
+</span><span class='line'>if not Elasticsearch::Model.client.indices.exists(index: :els)
+</span><span class='line'>  Elasticsearch::Model.client.indices.create(index: :els)
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>secrets.yml</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>development:
+</span><span class='line'>  elasticsearch:
+</span><span class='line'>    :host: localhost:9200
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Model 的設定</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Book &lt; ApplicationRecord
+</span><span class='line'>
+</span><span class='line'>  include Elasticsearch::Model
+</span><span class='line'>  include Elasticsearch::Model::Callbacks
+</span><span class='line'>
+</span><span class='line'>  index_name "els"
+</span><span class='line'>
+</span><span class='line'>  def as_indexed_json(option={})
+</span><span class='line'>    self.as_json({
+</span><span class='line'>      only: [:name, :description],
+</span><span class='line'>    })
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>測試</h2>
+
+<h4>import data</h4>
+
+<p>如果已經存在data的，可以透過 import 把現有的資料寫到 elasticsearch中</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Book.import</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>查詢</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Book.search "rails"</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>查詢結果</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>res = Book.search "rails"
+</span><span class='line'>res.records.records</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>更多</h4>
+
+<p><a href="https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model">https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model</a></p>
+
+<h2>參考資料</h2>
+
+<p><a href="https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model">https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model</a>
+<a href="http://www.codinginthecrease.com/news_article/show/409843?referrer_id=948927">http://www.codinginthecrease.com/news_article/show/409843?referrer_id=948927</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1315,120 +1452,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/25/rspec-in-rails-install/">Rspec in Rails 安裝篇</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-25T17:08:12+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:08 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>說明</h2>
-
-<h2>安裝</h2>
-
-<h4>Gemfile 加入 rspec-rails</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>group :development do
-</span><span class='line'>(略)
-</span><span class='line'>gem 'rspec-rails', '~&gt; 3.4'
-</span><span class='line'>(略)
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>bundle install</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>install rspec</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rails generate rspec:install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/rspec/install_rspec.png" width="400" alt="Alt text" /></p>
-
-<h4>add model rspec</h4>
-
-<p>app/models/post.rb</p>
-
-<p>post model add validates</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>validates :title, :context, presence: true</span></code></pre></td></tr></table></div></figure>
-
-
-<p>spec/models/post_spec.rb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
-</span><span class='line'>
-</span><span class='line'>RSpec.describe Post, type: :model do
-</span><span class='line'>
-</span><span class='line'>  it "valid attributes" do
-</span><span class='line'>    expect(Post.new).not_to be_valid
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  it "valid attributes" do
-</span><span class='line'>    post = Post.create!(title: 'test', context: 'test')
-</span><span class='line'>    expect(post).to be_valid
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>測試</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>spec spec/models/post_spec.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/rspec/test_pass.png" width="400" alt="Alt text" /></p>
-
-<h4>參考資料</h4>
-
-<p><a href="https://github.com/rspec/rspec-rails#model-specs">https://github.com/rspec/rspec-rails#model-specs</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1444,6 +1467,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/09/elasticsearch-in-rails/">在 Rails 中使用 Elasticsearch</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/09/introduction-elasticsearch/">Elasticsearch 介紹</a>
       </li>
     
@@ -1457,10 +1484,6 @@
     
       <li class="post">
         <a href="/blog/2016/07/04/constraints/">在Rails 中使用constraints來限制條件</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/07/03/actioncable-demo/">使用 ActionCable 做聊天室</a>
       </li>
     
   </ul>
