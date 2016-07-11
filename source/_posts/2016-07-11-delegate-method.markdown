@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "在 Rails 中 使用 delegate method""
+title: "在 Rails 中 使用 delegate method"
 date: 2016-07-11 23:08:23 +0800
 comments: true
 categories: rails
