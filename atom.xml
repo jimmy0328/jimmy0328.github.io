@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-09T23:00:26+08:00</updated>
+  <updated>2016-07-11T23:30:37+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,78 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在 Rails 中 使用 Delegate Method]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/07/11/delegate-method/"/>
+    <updated>2016-07-11T23:08:23+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/07/11/delegate-method</id>
+    <content type="html"><![CDATA[<h2>什麼是 delegate</h2>
+
+<p>delegate是 Rails ActiveSupport中的一個Module,
+可以在class 中定義 delegate 來取得另一個關聯的attribute，容易簡單操作使用，相信沒有人看的懂這是什麼意思，所以直接使用範例說明</p>
+
+<h2>範例一</h2>
+
+<p>例如 User 是has_one profile, 在一般情況下，我們可能會使用 <code>user.profile.age</code>, 但如果要讓age 可以直接定義在user物件裡，就可以使用 <code>delegate :age, to: :profile</code> 的方式，把profile 的 age 直接在 user 中可以操作</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class User &lt; ActiveRecord::Base
+</span><span class='line'>  has_one :profile
+</span><span class='line'>  delegate :age, to: :profile, allow_nil: true
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>User.new.age # nil</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>範例二</h2>
+
+<p>除了定義has_one 的對象外，也可以直接定義 variable, class variable, constants</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Foo
+</span><span class='line'>  CONSTANT_ARRAY = [0,1,2,3]
+</span><span class='line'>  @@class_array  = [4,5,6,7]
+</span><span class='line'>
+</span><span class='line'>  def initialize
+</span><span class='line'>    @instance_array = [8,9,10,11]
+</span><span class='line'>  end
+</span><span class='line'>  delegate :sum, to: :CONSTANT_ARRAY
+</span><span class='line'>  delegate :min, to: :@@class_array
+</span><span class='line'>  delegate :max, to: :@instance_array
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Foo.new.sum # =&gt; 6
+</span><span class='line'>Foo.new.min # =&gt; 4
+</span><span class='line'>Foo.new.max # =&gt; 11
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>參考資料來源</h2>
+
+<p><a href="http://apidock.com/rails/Module/delegate">http://apidock.com/rails/Module/delegate</a>
+<a href="https://simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/">https://simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在 Rails 中使用 Elasticsearch]]></title>
@@ -2542,73 +2614,6 @@ page.images.best
 <img src="http://jimmy0328.github.io/images/scraper/after_view.png" height="100" width="300" alt="Alt text" /></p>
 
 <p>打完收工囉</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Settingslogic Gem 的使用]]></title>
-    <link href="http://jimmy0328.github.io/blog/2016/06/18/settingslogic/"/>
-    <updated>2016-06-18T10:00:55+08:00</updated>
-    <id>http://jimmy0328.github.io/blog/2016/06/18/settingslogic</id>
-    <content type="html"><![CDATA[<h2>什麼是 Settingslogic</h2>
-
-<p>Settingslogic is a simple configuration / settings solution that uses an ERB enabled YAML file. It has been great for our apps, maybe you will enjoy it too. Settingslogic works with Rails, Sinatra, or any Ruby project.</p>
-
-<p><a href="https://github.com/binarylogic/settingslogic">Git source</a></p>
-
-<h2>安裝</h2>
-
-<p>Rails Gemfile中使用</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'settingslogic'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>記得 bundle install</p>
-
-<h2>使用</h2>
-
-<p>在Rails model中建立一支 models class, 例如 : Fee</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ass Fee &lt; Settingslogic
-</span><span class='line'>
-</span><span class='line'>  source "#{Rails.root}/config/fee.yml"
-</span><span class='line'>  namespace Rails.env
-</span><span class='line'>
-</span><span class='line'>end
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在 config 中 增新一支 fee.yml</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>defaults: &default
-</span><span class='line'>  salary:
-</span><span class='line'>    sales: 0
-</span><span class='line'>    staff: 0
-</span><span class='line'>    staff_overtime: 0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成</p>
-
-<h2>測試</h2>
-
-<p>在 Rails console 中就可以直接類似 Rails model 的方式操作它了</p>
-
-<p>例如: <code>Fee.salary</code></p>
-
-<p><img src="http://jimmy0328.github.io/images/settingslogic/settingslogic_test.png" alt="Alt text" /></p>
 ]]></content>
   </entry>
   

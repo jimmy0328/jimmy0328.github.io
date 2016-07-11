@@ -5,13 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在Rails 中使用constraints來限制條件 - 熊爸天下</title>
+  <title>在 Rails 中 使用 Delegate Method - 熊爸天下</title>
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="說明 有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
-例如: 限制:id必須是整數 1
-match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hellip;">
+  <meta name="description" content="什麼是 delegate delegate是 Rails ActiveSupport中的一個Module,
+可以在class 中定義 delegate 來取得另一個關聯的attribute，容易簡單操作使用，相信沒有人看的懂這是什麼意思，所以直接使用範例說明 範例一 例如 User &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +19,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/07/04/constraints/">
+  <link rel="canonical" href="http://jimmy0328.github.io/blog/2016/07/11/delegate-method/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="熊爸天下" type="application/atom+xml">
@@ -70,7 +69,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
   
   <header>
     
-      <h1 class="entry-title">在Rails 中使用constraints來限制條件</h1>
+      <h1 class="entry-title">在 Rails 中 使用 Delegate Method</h1>
     
     
       <p class="meta">
@@ -79,40 +78,39 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
 
 
-<time class='entry-date' datetime='2016-07-04T23:52:21+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:52 pm</span></time>
+<time class='entry-date' datetime='2016-07-11T23:08:23+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:08 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>說明</h2>
+<div class="entry-content"><h2>什麼是 delegate</h2>
 
-<p>有時侯我們在 Rails Routes 想要限定一些URL 的條件，此時就可以使用 constraints
-例如:</p>
+<p>delegate是 Rails ActiveSupport中的一個Module,
+可以在class 中定義 delegate 來取得另一個關聯的attribute，容易簡單操作使用，相信沒有人看的懂這是什麼意思，所以直接使用範例說明</p>
 
-<p>限制:id必須是整數</p>
+<h2>範例一</h2>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt; /\d/}</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>進階作法</h2>
-
-<p>有時侯限定的條件不會宣告在routes裡，也可以寫成class 來使用</p>
-
-<p>例如: admin/:id 這個id 是有條件限制, 條件寫在 AppConstraint</p>
+<p>例如 User 是has_one profile, 在一般情況下，我們可能會使用 <code>user.profile.age</code>, 但如果要讓age 可以直接定義在user物件裡，就可以使用 <code>delegate :age, to: :profile</code> 的方式，把profile 的 age 直接在 user 中可以操作</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>namespace :admin
-</span><span class='line'>  get ":id" =&gt; "apps#index",constraints: AppConstraint.new
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class User &lt; ActiveRecord::Base
+</span><span class='line'>  has_one :profile
+</span><span class='line'>  delegate :age, to: :profile, allow_nil: true
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>User.new.age # nil</span></code></pre></td></tr></table></div></figure>
 
 
-<p>在AppConstraint 中定義一個matches? 來處理
-以下constraint 是限定<code>admin/ms1983</code> 及 <code>admin/promo</code> 才是有效的URL ，找不到的就會對應不到URL</p>
+<h2>範例二</h2>
+
+<p>除了定義has_one 的對象外，也可以直接定義 variable, class variable, constants</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -121,31 +119,36 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class AppConstraint
-</span><span class='line'>  def matches?(request)
-</span><span class='line'>    ActiveRecord::Base.connection_pool.with_connection do
-</span><span class='line'>      (["ms1983","promo"]+App.active.pluck(:title)).uniq.include? request.fullpath.gsub(/^\//, "")
-</span><span class='line'>    end
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Foo
+</span><span class='line'>  CONSTANT_ARRAY = [0,1,2,3]
+</span><span class='line'>  @@class_array  = [4,5,6,7]
+</span><span class='line'>
+</span><span class='line'>  def initialize
+</span><span class='line'>    @instance_array = [8,9,10,11]
 </span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>加入autoload path</h2>
-
-<p>記得在 application.rb 加入, 這邊Rails 才可以知道 constraints 的存在</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>%w[constraints].each do |dir_name|
-</span><span class='line'>  config.autoload_paths &lt;&lt; Rails.root.join('lib', dir_name)
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  delegate :sum, to: :CONSTANT_ARRAY
+</span><span class='line'>  delegate :min, to: :@@class_array
+</span><span class='line'>  delegate :max, to: :@instance_array
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>Foo.new.sum # =&gt; 6
+</span><span class='line'>Foo.new.min # =&gt; 4
+</span><span class='line'>Foo.new.max # =&gt; 11
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>參考資料來源</h2>
 
-<p><a href="https://ihower.tw/rails4/routing.html">https://ihower.tw/rails4/routing.html</a>
-<a href="http://rails.ruby.tw/routing.html">http://rails.ruby.tw/routing.html</a></p>
+<p><a href="http://apidock.com/rails/Module/delegate">http://apidock.com/rails/Module/delegate</a>
+<a href="https://simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/">https://simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/</a></p>
 </div>
 
 
@@ -161,7 +164,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
 
 
 
-<time class='entry-date' datetime='2016-07-04T23:52:21+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:52 pm</span></time>
+<time class='entry-date' datetime='2016-07-11T23:08:23+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:08 pm</span></time>
       
 
 <span class="categories">
@@ -175,7 +178,7 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/07/04/constraints/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/07/04/constraints/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jimmy0328.github.io/blog/2016/07/11/delegate-method/" data-via="" data-counturl="http://jimmy0328.github.io/blog/2016/07/11/delegate-method/" >Tweet</a>
   
   
   
@@ -184,10 +187,8 @@ match "/events/show/:id" =&gt; "events#show", :constraints =&gt; {:id =&gt &hell
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/07/03/actioncable-demo/" title="Previous Post: 使用 ActionCable 做聊天室">&laquo; 使用 ActionCable 做聊天室</a>
+        <a class="basic-alignment left" href="/blog/2016/07/09/elasticsearch-in-rails/" title="Previous Post: 在 Rails 中使用 Elasticsearch">&laquo; 在 Rails 中使用 Elasticsearch</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/07/05/rack-mini-profiler/" title="Next Post: 使用 rack mini profiler 來查看效能">使用 rack mini profiler 來查看效能 &raquo;</a>
       
     </p>
   </footer>
