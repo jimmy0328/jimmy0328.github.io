@@ -22,7 +22,7 @@ class Order < ActiveRecord::Base
     # SecureRandom.urlsafe_base64(nil, false)
     # SecureRandom.hex(10)
     # 這邊可以再加入檢查是否已經有 id 存在
-    self.token = xxxxxx
+    self.token = SecureRandom.urlsafe_base64(nil, false)
   end
 end
 ```
