@@ -129,7 +129,7 @@ class Order &lt; ActiveRecord &hellip;">
 </span><span class='line'>    # SecureRandom.urlsafe_base64(nil, false)
 </span><span class='line'>    # SecureRandom.hex(10)
 </span><span class='line'>    # 這邊可以再加入檢查是否已經有 id 存在
-</span><span class='line'>    self.token = xxxxxx
+</span><span class='line'>    self.token = SecureRandom.urlsafe_base64(nil, false)
 </span><span class='line'>  end
 </span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
