@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-11T23:49:22+08:00</updated>
+  <updated>2016-07-13T00:08:00+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在 Model 中產生 Generate Token 的方式]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/07/12/generate-token/"/>
+    <updated>2016-07-12T23:39:38+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/07/12/generate-token</id>
+    <content type="html"><![CDATA[<p>我直接舉例說明，Order 的model 需要有token的欄位我們可以怎麼產生</p>
+
+<h2>方式一: 在model中before_create 來處理</h2>
+
+<p>大多我們都是使用這種方式來處理 token</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Order &lt; ActiveRecord::Base
+</span><span class='line'>
+</span><span class='line'>  before_create :set_token
+</span><span class='line'>
+</span><span class='line'>  private
+</span><span class='line'>  def set_token
+</span><span class='line'>    # SecureRandom.urlsafe_base64(nil, false)
+</span><span class='line'>    # SecureRandom.hex(10)
+</span><span class='line'>    # 這邊可以再加入檢查是否已經有 id 存在
+</span><span class='line'>    self.token = xxxxxx
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>方式二: Rails 5 提供的新功能</h2>
+
+<p>直接在 model 中宣告 has_secure_token
+如果以前有使用過 <a href="https://github.com/robertomiranda/has_secure_token">https://github.com/robertomiranda/has_secure_token</a> ，就是這種用法沒錯</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Order &lt; ActiveRecord::Base
+</span><span class='line'>  has_secure_token # 預設欄位是token
+</span><span class='line'>  has_secure_token :order_token #可以指定欄位
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下是 Rails5 source code 產生 token 的片段程式，在SecureToken module 裡的 class method 的has_secure_token,
+使用 <code>SecureRandom.base58(24)</code> 來產生token</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> def has_secure_token(attribute = :token)
+</span><span class='line'>    # Load securerandom only when has_secure_token is used.
+</span><span class='line'>    require 'active_support/core_ext/securerandom'
+</span><span class='line'>    define_method("regenerate_#{attribute}") { update! attribute =&gt; self.class.generate_unique_secure_token }
+</span><span class='line'>    before_create { self.send("#{attribute}=", self.class.generate_unique_secure_token) unless self.send("#{attribute}?")}
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def generate_unique_secure_token
+</span><span class='line'>    SecureRandom.base58(24)
+</span><span class='line'>  end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>參考來源</h2>
+
+<p><a href="http://blog.bigbinary.com/2016/03/23/has-secure-token-to-generate-unique-random-token-in-rails-5.html">http://blog.bigbinary.com/2016/03/23/has-secure-token-to-generate-unique-random-token-in-rails-5.html</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在 Rails 中 使用 Delegate Method]]></title>
@@ -2491,129 +2576,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
 <p><a href="http://roo.rubyforge.org/">http://roo.rubyforge.org/</a>
 [<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>] (<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>)
 <a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true">Railscasts</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[抓web網站小圖]]></title>
-    <link href="http://jimmy0328.github.io/blog/2016/06/18/scraper/"/>
-    <updated>2016-06-18T21:53:45+08:00</updated>
-    <id>http://jimmy0328.github.io/blog/2016/06/18/scraper</id>
-    <content type="html"><![CDATA[<h2>metainspector 做什麼</h2>
-
-<p>就像Facebook一樣，輸入了URL 他會自動的顯示小圖及一些說明，如果自己實作可能要寫一些爬蟲去抓一些html的內容回來
-metainspector 可以很簡單的實作這件事件</p>
-
-<p><a href="https://github.com/jaimeiniesta/metainspector">Git source</a></p>
-
-<h2>如何使用</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'metainspector'
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在 Rails Console 中當然就可以測試了，我這邊預計來抓 <code>title, description 及小圖</code>
-以 Airbnb 為例</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>page = MetaInspector.new('http://www.airbnb.com')</span></code></pre></td></tr></table></div></figure>
-
-
-<p>從回傳的page中拿到 title, description及小圖
-這些api可以在官網找到</p>
-
-<p><code>
-page.title
-page.description
-page.images.best
-</code></p>
-
-<h2>如Rails中使用ajax 來簡單的實作一下吧</h2>
-
-<p>加上javascript, 偷懶的話可以在erb的最下面加上這段也可</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script&gt;
-</span><span class='line'>  $("#web_url").on("change",function(){
-</span><span class='line'>    $.ajax({
-</span><span class='line'>      url: '/scraper',
-</span><span class='line'>      method: "post",
-</span><span class='line'>      data: {url: $(this).val()},
-</span><span class='line'>      success: function(data){
-</span><span class='line'>        console.warn(data);
-</span><span class='line'>        if(data){
-</span><span class='line'>          $("#web_title").val(data.title);
-</span><span class='line'>          $("#web_description").val(data.description);
-</span><span class='line'>          $("#web_image").val(data.image);
-</span><span class='line'>          $("#web_image_preview").attr("src", data.image).attr("style","width:100px")
-</span><span class='line'>        }
-</span><span class='line'>      }
-</span><span class='line'>    });
-</span><span class='line'>  });
-</span><span class='line'>
-</span><span class='line'>&lt;/script&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在controller中可以這麼寫</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def scraper
-</span><span class='line'> begin
-</span><span class='line'>   page = MetaInspector.new(params[:url])
-</span><span class='line'>   render json: {title: page.title, description: page.description, image: page.images.best}
-</span><span class='line'> rescue
-</span><span class='line'> end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Routes設定</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.application.routes.draw do
-</span><span class='line'>  resources :webs
-</span><span class='line'>  post "scraper" =&gt; "webs#scraper"
-</span><span class='line'>  root "webs#index"
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>畫面</h2>
-
-<p>輸入完url之後，其它欄位會自動抓回來
-<br/>
-<img src="http://jimmy0328.github.io/images/scraper/before_view.png" height="100" width="300" alt="Alt text" />
-<br/>
-<img src="http://jimmy0328.github.io/images/scraper/after_view.png" height="100" width="300" alt="Alt text" /></p>
-
-<p>打完收工囉</p>
 ]]></content>
   </entry>
   

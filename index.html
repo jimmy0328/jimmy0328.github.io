@@ -9,8 +9,19 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="什麼是 delegate delegate是 Rails ActiveSupport中的一個Module,
-可以在class 中定義 delegate 來取得另一個關聯的attribute，容易簡單操作使用，相信沒有人看的懂這是什麼意思，所以直接使用範例說明 範例一 例如 User &hellip;">
+  <meta name="description" content="我直接舉例說明，Order 的model 需要有token的欄位我們可以怎麼產生 方式一: 在model中before_create 來處理 大多我們都是使用這種方式來處理 token 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+class Order &lt; ActiveRecord &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +77,114 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/12/generate-token/">在 Model 中產生 Generate Token 的方式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-12T23:39:38+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:39 pm</span></time>
+        
+           | <a href="/blog/2016/07/12/generate-token/#disqus_thread"
+             data-disqus-identifier="http://jimmy0328.github.io/blog/2016/07/12/generate-token/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我直接舉例說明，Order 的model 需要有token的欄位我們可以怎麼產生</p>
+
+<h2>方式一: 在model中before_create 來處理</h2>
+
+<p>大多我們都是使用這種方式來處理 token</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Order &lt; ActiveRecord::Base
+</span><span class='line'>
+</span><span class='line'>  before_create :set_token
+</span><span class='line'>
+</span><span class='line'>  private
+</span><span class='line'>  def set_token
+</span><span class='line'>    # SecureRandom.urlsafe_base64(nil, false)
+</span><span class='line'>    # SecureRandom.hex(10)
+</span><span class='line'>    # 這邊可以再加入檢查是否已經有 id 存在
+</span><span class='line'>    self.token = xxxxxx
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>方式二: Rails 5 提供的新功能</h2>
+
+<p>直接在 model 中宣告 has_secure_token
+如果以前有使用過 <a href="https://github.com/robertomiranda/has_secure_token">https://github.com/robertomiranda/has_secure_token</a> ，就是這種用法沒錯</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Order &lt; ActiveRecord::Base
+</span><span class='line'>  has_secure_token # 預設欄位是token
+</span><span class='line'>  has_secure_token :order_token #可以指定欄位
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下是 Rails5 source code 產生 token 的片段程式，在SecureToken module 裡的 class method 的has_secure_token,
+使用 <code>SecureRandom.base58(24)</code> 來產生token</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> def has_secure_token(attribute = :token)
+</span><span class='line'>    # Load securerandom only when has_secure_token is used.
+</span><span class='line'>    require 'active_support/core_ext/securerandom'
+</span><span class='line'>    define_method("regenerate_#{attribute}") { update! attribute =&gt; self.class.generate_unique_secure_token }
+</span><span class='line'>    before_create { self.send("#{attribute}=", self.class.generate_unique_secure_token) unless self.send("#{attribute}?")}
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def generate_unique_secure_token
+</span><span class='line'>    SecureRandom.base58(24)
+</span><span class='line'>  end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>參考來源</h2>
+
+<p><a href="http://blog.bigbinary.com/2016/03/23/has-secure-token-to-generate-unique-random-token-in-rails-5.html">http://blog.bigbinary.com/2016/03/23/has-secure-token-to-generate-unique-random-token-in-rails-5.html</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1198,104 +1317,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/29/mixpanel/">Rails Use Mixpanel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-29T23:11:50+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:11 pm</span></time>
-        
-           | <a href="/blog/2016/06/29/mixpanel/#disqus_thread"
-             data-disqus-identifier="http://jimmy0328.github.io/blog/2016/06/29/mixpanel/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>什麼是Mixpanel</h2>
-
-<p>現在的網站越來越多平台為了監控使用者行為分析，所以大多數人平台都會導入 GA (Google Analytics)，除了很方便整合外，這個服務也是免費的。
-除了GA 外，Mixpanel 這個服務也是一個很強的資料分析平台服務，至於 mixpanel 的功能，這邊不多做介紹 ，快去申請一個來用就對了</p>
-
-<p><a href="https://mixpanel.com">https://mixpanel.com</a></p>
-
-<h2>使用mixpanel gem</h2>
-
-<h4>- Gemfile 中加入</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'mixpanel-ruby'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>bundle install</p>
-
-<h4>- 設定mixpanel token</h4>
-
-<p>application.rb
-在application config 裡 init mixpanel</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>config.after_initialize do
-</span><span class='line'>  config.mixpanel = Mixpanel::Tracker.new(secrets.mixpanel[:token])
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我這邊是把 mixpanel 的token 放在 secret.yml，所以寫法上可以用 <code>secrets.mixpanel[:token]</code> 拿到token</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>略
-</span><span class='line'>development:
-</span><span class='line'>  secret_key_base:
-</span><span class='line'>  mixpanel:
-</span><span class='line'>    :token: 0000000000000000000000000</span></code></pre></td></tr></table></div></figure>
-
-
-<p>mixpanel 的token在下圖可以找到</p>
-
-<p><img src="/images/mixpanel/mixpanel.png" width="800" alt="Alt text" /></p>
-
-<h2>簡單的在 Rails中實現 Mixpanel Gem</h2>
-
-<p>在application_controller.rb 中加上</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>delegate :mixpanel, to: :"Rails.configuration"
-</span><span class='line'>before_action do
-</span><span class='line'>  mixpanel.track("User", "Test", {event: 'test', description: 'test context'})
-</span><span class='line'>end
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成，這樣只要有request 進到controller 的就都會送Event 給 mixpanel 了
-<img src="/images/mixpanel/mixpanel_event.png" width="800" alt="Alt text" /></p>
-
-<p>之後會再補上如何有效的加上Event 事件送給 mixpanel</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1311,6 +1332,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/12/generate-token/">在 Model 中產生 Generate Token 的方式</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/11/delegate-method/">在 Rails 中 使用 Delegate Method</a>
       </li>
     
@@ -1324,10 +1349,6 @@
     
       <li class="post">
         <a href="/blog/2016/07/07/tripadvisor-widgets/">將 TripAdvisor Widgets 掛到網站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/07/05/rack-mini-profiler/">使用 Rack Mini Profiler 來查看效能</a>
       </li>
     
   </ul>
