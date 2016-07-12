@@ -25,6 +25,7 @@ class Order < ActiveRecord::Base
     self.token = SecureRandom.urlsafe_base64(nil, false)
   end
 end
+
 ```
 
 
