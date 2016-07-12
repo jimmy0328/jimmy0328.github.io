@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-13T00:11:46+08:00</updated>
+  <updated>2016-07-13T00:11:47+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -47,7 +47,8 @@
 </span><span class='line'>    # 這邊可以再加入檢查是否已經有 id 存在
 </span><span class='line'>    self.token = SecureRandom.urlsafe_base64(nil, false)
 </span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>方式二: Rails 5 提供的新功能</h2>
