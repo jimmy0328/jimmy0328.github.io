@@ -4,7 +4,7 @@
   <title><![CDATA[熊爸天下]]></title>
   <link href="http://jimmy0328.github.io/atom.xml" rel="self"/>
   <link href="http://jimmy0328.github.io/"/>
-  <updated>2016-07-13T00:11:47+08:00</updated>
+  <updated>2016-07-20T23:49:01+08:00</updated>
   <id>http://jimmy0328.github.io/</id>
   <author>
     <name><![CDATA[Jimmy Lin]]></name>
@@ -12,6 +12,151 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用 Ruby 來爬資料]]></title>
+    <link href="http://jimmy0328.github.io/blog/2016/07/20/web-crawler/"/>
+    <updated>2016-07-20T23:40:09+08:00</updated>
+    <id>http://jimmy0328.github.io/blog/2016/07/20/web-crawler</id>
+    <content type="html"><![CDATA[<h2>前言</h2>
+
+<p>很單純只是要爬資料，所以使用 Rails 的 ActiveJob 來處理</p>
+
+<p>為什麼要用 ActiveJob 呢，因為如果這個是有定期需要處理的，可以再加上cron 由系統自己去背景處理</p>
+
+<h2>說明</h2>
+
+<h4>產生 active job</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g job trunk</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在 app/jobs/下會多一支 trunk_job.rb
+修改一下，內容如下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class TruckJob &lt; ApplicationJob
+</span><span class='line'>  queue_as :default
+</span><span class='line'>
+</span><span class='line'>  URL = "http://這是密秘/index.php"
+</span><span class='line'>  @regions, @data = [], []
+</span><span class='line'>
+</span><span class='line'>  def perform(*args)
+</span><span class='line'>    find_all_regions
+</span><span class='line'>    start_fetch_regions
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def find_all_regions
+</span><span class='line'>    parse_page = Nokogiri::HTML(HTTParty.get(URL))
+</span><span class='line'>    #先打所有的區先整理下來
+</span><span class='line'>    @regions = parse_page.css("#Contentcarry_lineSearchs_D").css("option").map{|c| c.text}
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def start_fetch_regions
+</span><span class='line'>    @regions.each do |region|
+</span><span class='line'>      fetch_region(region)
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def fetch_region(region)
+</span><span class='line'>    50.times do |i|
+</span><span class='line'>      url = URI.encode("#{URL}?s_D=#{region}&carry_linePage=#{i}&carry_linePageSize=100")
+</span><span class='line'>      line_parse = Nokogiri::HTML(HTTParty.get(url))
+</span><span class='line'>      # 查出來沒有資料的就離開
+</span><span class='line'>      if line_parse.css(".Row").length == 0
+</span><span class='line'>        break;
+</span><span class='line'>      end
+</span><span class='line'>
+</span><span class='line'>      line_parse.css(".Row").map do |row|
+</span><span class='line'>        one_row = row.css("td").map{|c| c.text.strip}
+</span><span class='line'>        save(one_row)
+</span><span class='line'>      end
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def save(data)
+</span><span class='line'>    Spot.transaction do
+</span><span class='line'>      spot = Spot.new
+</span><span class='line'>      spot.area             = data[0]
+</span><span class='line'>      spot.trunk_number     = data[1]
+</span><span class='line'>      spot.number           = data[2]
+</span><span class='line'>      spot.city             = data[3]
+</span><span class='line'>      spot.village          = data[4]
+</span><span class='line'>      spot.address          = data[5]
+</span><span class='line'>      spot.arrival_time     = data[6]
+</span><span class='line'>      spot.day_of_the_weeks = data[7]
+</span><span class='line'>      spot.save_for_bulk_import!
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>測試</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>TrunkJob.perform_now</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其實以上只是要備存作法，沒有太大意思 XD</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在 Model 中產生 Generate Token 的方式]]></title>
@@ -2474,109 +2619,6 @@ webpack-dev-server 是個小型的 node.js express server, 所以在啟動projec
 <p><a href="https://www.youtube.com/watch?v=bfPb1zD91Rg&amp;list=PLjeHh2LSCFrWGT5uVjUuFKAcrcj5kSai1&amp;index=1">You Tube 介紹</a></p>
 
 <p><a href="https://github.com/mperham/sidekiq/wiki">sidekiq wiki</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用 Roo Gem 來讀取 Excel 內容]]></title>
-    <link href="http://jimmy0328.github.io/blog/2016/06/19/roo-gem/"/>
-    <updated>2016-06-19T22:24:45+08:00</updated>
-    <id>http://jimmy0328.github.io/blog/2016/06/19/roo-gem</id>
-    <content type="html"><![CDATA[<h2>什麼是 roo</h2>
-
-<p>用來方便讀取 xls, xlsx, csv 的檔案內容，最常用在匯入一些excel的資料
-這邊會先介紹簡單的roo 使用，會在下一個剖份再來實作一個 web 上傳檔案可以匯入的功能</p>
-
-<h2>如何使用</h2>
-
-<pre><code class="`">  gem install roo
-</code></pre>
-
-<p> 另外如果有編碼的問題，請也一併用 iconv 來處理</p>
-
-<h2>範例</h2>
-
-<p>簡單的說明一下，假設我有一份 xlsx 的檔案，如下圖</p>
-
-<p><img src="http://jimmy0328.github.io/images/roo/xlsx_file.png" alt="Alt text" /></p>
-
-<p>接下來使用 roo 來簡單的讀取資料
-這邊我寫一支簡單的ruby 來測試一下，所以當我執行 <code>Excel.import("../hotels.xlsx")</code> 就可以把我要的xlsx試著print出來</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'roo'
-</span><span class='line'>require 'iconv'
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>class Hotel
-</span><span class='line'>  def initialize(name, address, coordinates)
-</span><span class='line'>    @name = name
-</span><span class='line'>    @address = address
-</span><span class='line'>    @coordinates = coordinates
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  def print
-</span><span class='line'>    "#{@name} | #{@address} | #{@coordinates}"
-</span><span class='line'>  end
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>class Excel
-</span><span class='line'>
-</span><span class='line'>  def self.import(file_path)
-</span><span class='line'>    xlsx = Roo::Spreadsheet.open(file_path)
-</span><span class='line'>    xlsx.first_row.upto(xlsx.last_row) do |row|
-</span><span class='line'>      name = xlsx.cell(row,'A')
-</span><span class='line'>      address = xlsx.cell(row,'B')
-</span><span class='line'>      coordinates = xlsx.cell(row,'C')
-</span><span class='line'>      puts Hotel.new(name, address, coordinates).print
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>Excel.import("../hotels.xlsx")
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成，下一篇再來實作一個檔案上傳可以import的功能</p>
-
-<h2>參考資料</h2>
-
-<p><a href="http://roo.rubyforge.org/">http://roo.rubyforge.org/</a>
-[<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>] (<a href="https://github.com/roo-rb/roo">https://github.com/roo-rb/roo</a>)
-<a href="http://railscasts.com/episodes/396-importing-csv-and-excel?autoplay=true">Railscasts</a></p>
 ]]></content>
   </entry>
   

@@ -9,19 +9,8 @@
   <meta name="author" content="Jimmy Lin">
 
   
-  <meta name="description" content="我直接舉例說明，Order 的model 需要有token的欄位我們可以怎麼產生 方式一: 在model中before_create 來處理 大多我們都是使用這種方式來處理 token 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-class Order &lt; ActiveRecord &hellip;">
+  <meta name="description" content="前言 很單純只是要爬資料，所以使用 Rails 的 ActiveJob 來處理 為什麼要用 ActiveJob 呢，因為如果這個是有定期需要處理的，可以再加上cron 由系統自己去背景處理 說明 產生 active job 1
+rails g job trunk 在 app/jobs/下會多一支 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +66,174 @@ class Order &lt; ActiveRecord &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/20/web-crawler/">使用 Ruby 來爬資料</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-20T23:40:09+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:40 pm</span></time>
+        
+           | <a href="/blog/2016/07/20/web-crawler/#disqus_thread"
+             data-disqus-identifier="http://jimmy0328.github.io/blog/2016/07/20/web-crawler/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>前言</h2>
+
+<p>很單純只是要爬資料，所以使用 Rails 的 ActiveJob 來處理</p>
+
+<p>為什麼要用 ActiveJob 呢，因為如果這個是有定期需要處理的，可以再加上cron 由系統自己去背景處理</p>
+
+<h2>說明</h2>
+
+<h4>產生 active job</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails g job trunk</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在 app/jobs/下會多一支 trunk_job.rb
+修改一下，內容如下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class TruckJob &lt; ApplicationJob
+</span><span class='line'>  queue_as :default
+</span><span class='line'>
+</span><span class='line'>  URL = "http://這是密秘/index.php"
+</span><span class='line'>  @regions, @data = [], []
+</span><span class='line'>
+</span><span class='line'>  def perform(*args)
+</span><span class='line'>    find_all_regions
+</span><span class='line'>    start_fetch_regions
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def find_all_regions
+</span><span class='line'>    parse_page = Nokogiri::HTML(HTTParty.get(URL))
+</span><span class='line'>    #先打所有的區先整理下來
+</span><span class='line'>    @regions = parse_page.css("#Contentcarry_lineSearchs_D").css("option").map{|c| c.text}
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def start_fetch_regions
+</span><span class='line'>    @regions.each do |region|
+</span><span class='line'>      fetch_region(region)
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def fetch_region(region)
+</span><span class='line'>    50.times do |i|
+</span><span class='line'>      url = URI.encode("#{URL}?s_D=#{region}&carry_linePage=#{i}&carry_linePageSize=100")
+</span><span class='line'>      line_parse = Nokogiri::HTML(HTTParty.get(url))
+</span><span class='line'>      # 查出來沒有資料的就離開
+</span><span class='line'>      if line_parse.css(".Row").length == 0
+</span><span class='line'>        break;
+</span><span class='line'>      end
+</span><span class='line'>
+</span><span class='line'>      line_parse.css(".Row").map do |row|
+</span><span class='line'>        one_row = row.css("td").map{|c| c.text.strip}
+</span><span class='line'>        save(one_row)
+</span><span class='line'>      end
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def save(data)
+</span><span class='line'>    Spot.transaction do
+</span><span class='line'>      spot = Spot.new
+</span><span class='line'>      spot.area             = data[0]
+</span><span class='line'>      spot.trunk_number     = data[1]
+</span><span class='line'>      spot.number           = data[2]
+</span><span class='line'>      spot.city             = data[3]
+</span><span class='line'>      spot.village          = data[4]
+</span><span class='line'>      spot.address          = data[5]
+</span><span class='line'>      spot.arrival_time     = data[6]
+</span><span class='line'>      spot.day_of_the_weeks = data[7]
+</span><span class='line'>      spot.save_for_bulk_import!
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>測試</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>TrunkJob.perform_now</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其實以上只是要備存作法，沒有太大意思 XD</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1149,175 +1306,6 @@ class Order &lt; ActiveRecord &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/30/react-in-rails/">在Rails中安裝React</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-06-30T23:55:11+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:55 pm</span></time>
-        
-           | <a href="/blog/2016/06/30/react-in-rails/#disqus_thread"
-             data-disqus-identifier="http://jimmy0328.github.io/blog/2016/06/30/react-in-rails/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>安裝 react gem</h2>
-
-<p>Gemfile 中加入
-使用 sprockets-es6 來寫ES6</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'react-rails'
-</span><span class='line'>gem 'sprockets-es6', require: "sprockets/es6"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>bundle install</p>
-
-<h2>安裝 react 檔案</h2>
-
-<p>會建立相關的檔案</p>
-
-<p>執行 <code>rails g react:install</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rails g react:install</span></code></pre></td></tr></table></div></figure>
-
-
-<p>會建立相關的檔案</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Running via Spring preloader in process 15876
-</span><span class='line'>create  app/assets/javascripts/components
-</span><span class='line'>create  app/assets/javascripts/components/.gitkeep
-</span><span class='line'>insert  app/assets/javascripts/application.js
-</span><span class='line'>insert  app/assets/javascripts/application.js
-</span><span class='line'>insert  app/assets/javascripts/application.js
-</span><span class='line'>create  app/assets/javascripts/components.js</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>修改 application.js</h2>
-
-<p>app/assets/javascripts/application.js</p>
-
-<p>把turbolinks 及 tree 移除，加入 react, react_ujs, components 目錄</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> //= require jquery
-</span><span class='line'> //= require jquery_ujs
-</span><span class='line'> //= require react
-</span><span class='line'> //= require react_ujs
-</span><span class='line'> //= require components</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>修改環境設定檔</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># config/environments/development.rb
-</span><span class='line'>MyApp::Application.configure do
-</span><span class='line'>  config.react.variant = :development
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'># config/environments/production.rb
-</span><span class='line'>MyApp::Application.configure do
-</span><span class='line'>  config.react.variant = :production
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>啟用 react-addons</h2>
-
-<p>在 application.rb 中啟用</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>MyApp::Application.configure do
-</span><span class='line'>  config.react.addons = true # defaults to false
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>撰寫第一支react</h2>
-
-<p>新增 <code>app/assets/javascripts/components/hello.es6</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>window.Home = ( window.Home || {} );
-</span><span class='line'>window.Home = class Home extends React.Component{
-</span><span class='line'>
-</span><span class='line'>  constructor(props){
-</span><span class='line'>    super(props);
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  render(){
-</span><span class='line'>    return(
-</span><span class='line'>      &lt;div&gt;
-</span><span class='line'>        Hello React and Rails
-</span><span class='line'>      &lt;/div&gt;
-</span><span class='line'>    );
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在 view 中加上 component, 例如在 &lsquo; home/index.html.erb &rsquo;</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= react_component("Home.Index")%&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大功告成, 測試看看有沒有成功</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1333,6 +1321,10 @@ class Order &lt; ActiveRecord &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/07/20/web-crawler/">使用 Ruby 來爬資料</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/07/12/generate-token/">在 Model 中產生 Generate Token 的方式</a>
       </li>
     
@@ -1346,10 +1338,6 @@ class Order &lt; ActiveRecord &hellip;">
     
       <li class="post">
         <a href="/blog/2016/07/09/introduction-elasticsearch/">Elasticsearch 介紹</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/07/07/tripadvisor-widgets/">將 TripAdvisor Widgets 掛到網站</a>
       </li>
     
   </ul>
