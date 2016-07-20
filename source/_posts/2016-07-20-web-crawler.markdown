@@ -23,7 +23,7 @@ rails g job trunk
 在 app/jobs/下會多一支 trunk_job.rb
 修改一下，內容如下
 
-```
+```ruby
 class TruckJob < ApplicationJob
   queue_as :default
 
